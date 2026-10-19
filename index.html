@@ -92,14 +92,19 @@
 
     <!-- Barra de Pesquisa e Filtros -->
     <div class="controls">
-        <div class="control-group" style="flex-grow: 1; max-width: 250px;">
+        <div class="control-group" style="flex-grow: 1; max-width: 230px;">
             <label for="searchTitle">Buscar por nome:</label>
             <input type="text" id="searchTitle" placeholder="Ex: Batman, Resident Evil...">
         </div>
         
         <div class="control-group">
-            <label for="maxPrice">Preço máximo (R$):</label>
-            <input type="number" id="maxPrice" value="100" min="5" max="500" style="width: 110px;">
+            <label for="minPrice">Preço mín. (R$):</label>
+            <input type="number" id="minPrice" value="0" min="0" max="500" style="width: 100px;">
+        </div>
+
+        <div class="control-group">
+            <label for="maxPrice">Preço máx. (R$):</label>
+            <input type="number" id="maxPrice" value="100" min="5" max="500" style="width: 100px;">
         </div>
 
         <div class="control-group">
@@ -163,7 +168,6 @@
             }
         }
 
-        // Reseta a paginação e faz nova busca (usado ao alterar filtros ou pesquisar)
         function resetAndFetch() {
             currentPage = 0;
             hasMoreData = true;
@@ -185,13 +189,16 @@
             }
 
             const title = document.getElementById('searchTitle').value;
+            const minPriceBRL = parseFloat(document.getElementById('minPrice').value) || 0;
             const maxPriceBRL = parseFloat(document.getElementById('maxPrice').value) || 100;
             const storeID = document.getElementById('storeSelect').value;
             const sortBy = document.getElementById('sortBy').value;
 
+            // Converter R$ para US$ para a requisição
+            const minPriceUSD = (minPriceBRL / usdRate).toFixed(2);
             const maxPriceUSD = (maxPriceBRL / usdRate).toFixed(2);
 
-            let url = `https://www.cheapshark.com/api/1.0/deals?upperPrice=${maxPriceUSD}&sortBy=${sortBy}&pageNumber=${currentPage}&pageSize=20`;
+            let url = `https://www.cheapshark.com/api/1.0/deals?lowerPrice=${minPriceUSD}&upperPrice=${maxPriceUSD}&sortBy=${sortBy}&pageNumber=${currentPage}&pageSize=20`;
             
             if (storeID !== "") {
                 url += `&storeID=${storeID}`;
@@ -219,7 +226,6 @@
                     return;
                 }
 
-                // Se vieram menos de 20 itens, significa que chegamos ao fim dos resultados da API
                 if (deals.length < 20) {
                     hasMoreData = false;
                 }
@@ -263,10 +269,9 @@
             }
         }
 
-        // Listener para rolagem infinita
+        // Rolagem infinita
         window.addEventListener('scroll', () => {
             const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-            // Quando faltar 300px para chegar ao fim da página, carrega mais
             if (scrollTop + clientHeight >= scrollHeight - 300) {
                 fetchDeals(true);
             }
