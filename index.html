@@ -10,7 +10,7 @@
 
     <style>
         * { box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; margin: 0; padding: 20px; }
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; margin: 0; padding: 20px 20px 0 20px; display: flex; flex-direction: column; min-height: 100vh; }
         h1 { text-align: center; color: #00ffcc; margin-bottom: 20px; font-size: 28px; }
         
         /* Estilos dos Filtros */
@@ -28,7 +28,7 @@
         .btn-hot:hover { background: #e03d00; }
 
         /* Estilos da Grelha de Jogos */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; flex-grow: 1; }
         
         /* Estilo do Cartão */
         .card { 
@@ -93,6 +93,57 @@
         }
         .btn:hover { background: #00cca3; }
         .loading { text-align: center; font-size: 18px; color: #aaa; grid-column: 1 / -1; padding: 40px 0; }
+
+        /* Estilos do Rodapé */
+        footer { 
+            margin-top: 40px; 
+            padding: 20px 0; 
+            border-top: 1px solid #2a2a2a; 
+            text-align: center; 
+            font-size: 13px; 
+            color: #888;
+        }
+        footer a { color: #00ffcc; text-decoration: none; margin: 0 10px; cursor: pointer; }
+        footer a:hover { text-decoration: underline; }
+
+        /* Estilos do Modal Legal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-content {
+            background: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 8px;
+            max-width: 650px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 25px;
+            color: #ccc;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .modal-content h2 { color: #00ffcc; margin-top: 0; font-size: 20px; }
+        .modal-content h3 { color: #fff; font-size: 15px; margin-top: 15px; }
+        .modal-close {
+            background: #00ffcc;
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            float: right;
+            margin-top: -10px;
+        }
+        .modal-close:hover { background: #00cca3; }
     </style>
 </head>
 <body>
@@ -153,6 +204,48 @@
     
     <div id="loadMoreStatus" style="text-align: center; color: #777; padding: 20px; display: none;">Carregando mais jogos...</div>
 
+    <!-- Rodapé Institutional -->
+    <footer>
+        <div>&copy; 2026 Promoções de Jogos — Agregador de Ofertas em Tempo Real</div>
+        <div style="margin-top: 10px;">
+            <a onclick="openModal('privacyModal')">Política de Privacidade</a> | 
+            <a onclick="openModal('termsModal')">Termos de Uso</a>
+        </div>
+    </footer>
+
+    <!-- Modal Política de Privacidade -->
+    <div id="privacyModal" class="modal-overlay" onclick="closeModalOnBg(event, 'privacyModal')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('privacyModal')">Fechar</button>
+            <h2>Política de Privacidade</h2>
+            <p>Esta Política de Privacidade descreve como as suas informações pessoais são coletadas, usadas e compartilhadas quando você visita o site Promoções de Jogos.</p>
+            
+            <h3>1. Coleta de Dados</h3>
+            <p>Não solicitamos cadastro nem coletamos dados de identificação pessoal direta (como nome ou e-mail). No entanto, dados anônimos de navegação como endereço IP, tipo de navegador e páginas visitadas podem ser coletados automaticamente para fins estatísticos e de desempenho.</p>
+
+            <h3>2. Cookies e Google AdSense</h3>
+            <p>Utilizamos serviços de terceiros, como o Google AdSense, para exibir anúncios durante a sua visita ao nosso site. O Google utiliza cookies (como o cookie DART) para veicular anúncios com base nas suas visitas anteriores a este e a outros sites na internet. Você pode optar por desativar a exibição de publicidade personalizada acessando as Configurações de Anúncios do Google.</p>
+
+            <h3>3. Links de Afiliados e Terceiros</h3>
+            <p>Nosso site contém links redirecionando para lojas externas (como Steam, GOG, Epic Games, entre outras). Não nos responsabilizamos pelas políticas de privacidade, conteúdos ou práticas dessas lojas parceiras. Recomendamos que leia a política de cada site visitado.</p>
+        </div>
+    </div>
+
+    <!-- Modal Termos de Uso -->
+    <div id="termsModal" class="modal-overlay" onclick="closeModalOnBg(event, 'termsModal')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('termsModal')">Fechar</button>
+            <h2>Termos de Uso</h2>
+            <p>Ao acessar e navegar pelo site Promoções de Jogos, você concorda em cumprir estes termos de serviço e todas as leis aplicáveis.</p>
+            
+            <h3>1. Isenção de Responsabilidade sobre Preços</h3>
+            <p>Os preços, descontos e disponibilidade dos jogos exibidos no site são obtidos em tempo real via APIs de parceiros (como CheapShark). Embora nos esforcemos para manter as informações atualizadas, o valor final e a disponibilidade são de responsabilidade exclusiva da loja vendedora no momento da finalização da compra.</p>
+
+            <h3>2. Uso do Conteúdo</h3>
+            <p>O site opera estritamente como um agregador informativo de ofertas. Não realizamos vendas diretas, transações financeiras nem processamos dados de pagamento dos usuários.</p>
+        </div>
+    </div>
+
     <script>
         let usdRate = 5.0; 
         let currentPage = 0;
@@ -168,6 +261,11 @@
             "15": "Fanatical",
             "25": "Epic Games"
         };
+
+        // Modal Controls
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function closeModalOnBg(e, id) { if (e.target.id === id) closeModal(id); }
 
         async function getUSDRate() {
             try {
