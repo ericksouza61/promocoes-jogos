@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promoções de Jogos</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; margin: 0; padding: 20px; }
+        h1 { text-align: center; color: #00ffcc; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
+        .card { background: #1e1e1e; border-radius: 8px; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between; }
+        .card img { width: 100%; height: 120px; object-fit: cover; border-radius: 4px; }
+        .title { font-size: 16px; font-weight: bold; margin: 10px 0; }
+        .price { color: #00ffcc; font-size: 18px; font-weight: bold; }
+        .normal-price { text-decoration: line-through; color: #888; font-size: 14px; }
+        .btn { display: block; text-align: center; background: #00ffcc; color: #000; padding: 10px; border-radius: 4px; text-decoration: none; font-weight: bold; margin-top: 10px; }
+        .btn:hover { background: #00cca3; }
+    </style>
+</head>
+<body>
+
+    <h1>🔥 Promoções de Jogos</h1>
+    <div id="deals" class="grid">Carregando promoções...</div>
+
+    <script>
+        async function fetchDeals() {
+            try {
+                // Buscando dados da API gratuita CheapShark (jogos com maior desconto)
+                const response = await fetch('https://www.cheapshark.com/api/1.0/deals?upperPrice=15&pageSize=12');
+                const deals = await response.json();
+                
+                const container = document.getElementById('deals');
+                container.innerHTML = '';
+
+                deals.forEach(deal => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div>
+                            <img src="${deal.thumb}" alt="${deal.title}">
+                            <div class="title">${deal.title}</div>
+                        </div>
+                        <div>
+                            <div class="normal-price">$${deal.normalPrice}</div>
+                            <div class="price">$${deal.salePrice} <span style="font-size:12px; color:#00ffcc;">(-${Math.round(deal.savings)}%)</span></div>
+                            <a class="btn" href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank">Ver Oferta</a>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                document.getElementById('deals').innerText = 'Erro ao carregar as promoções.';
+            }
+        }
+
+        fetchDeals();
+    </script>
+
+</body>
+</html>
