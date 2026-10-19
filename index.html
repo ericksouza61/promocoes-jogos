@@ -15,8 +15,13 @@
         .control-group label { font-size: 13px; color: #aaa; font-weight: bold; }
         input, select { padding: 10px 12px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: #fff; font-size: 14px; }
         input:focus, select:focus { outline: none; border-color: #00ffcc; }
-        .btn-search { background: #00ffcc; color: #000; font-weight: bold; border: none; cursor: pointer; padding: 10px 24px; border-radius: 6px; align-self: flex-end; font-size: 14px; transition: background 0.2s; }
+        
+        /* Botões de Ação */
+        .actions { display: flex; gap: 10px; align-self: flex-end; }
+        .btn-search { background: #00ffcc; color: #000; font-weight: bold; border: none; cursor: pointer; padding: 10px 20px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
         .btn-search:hover { background: #00cca3; }
+        .btn-hot { background: #ff4500; color: #fff; font-weight: bold; border: none; cursor: pointer; padding: 10px 20px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
+        .btn-hot:hover { background: #e03d00; }
 
         /* Estilos da Grelha de Jogos */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
@@ -92,19 +97,19 @@
 
     <!-- Barra de Pesquisa e Filtros -->
     <div class="controls">
-        <div class="control-group" style="flex-grow: 1; max-width: 230px;">
+        <div class="control-group" style="flex-grow: 1; max-width: 220px;">
             <label for="searchTitle">Buscar por nome:</label>
             <input type="text" id="searchTitle" placeholder="Ex: Batman, Resident Evil...">
         </div>
         
         <div class="control-group">
             <label for="minPrice">Preço mín. (R$):</label>
-            <input type="number" id="minPrice" value="0" min="0" max="500" style="width: 100px;">
+            <input type="number" id="minPrice" value="0" min="0" max="500" style="width: 95px;">
         </div>
 
         <div class="control-group">
             <label for="maxPrice">Preço máx. (R$):</label>
-            <input type="number" id="maxPrice" value="100" min="5" max="500" style="width: 100px;">
+            <input type="number" id="maxPrice" value="200" min="5" max="1000" style="width: 95px;">
         </div>
 
         <div class="control-group">
@@ -125,12 +130,16 @@
             <label for="sortBy">Ordenar por:</label>
             <select id="sortBy">
                 <option value="Savings">Maior Desconto (%)</option>
-                <option value="Price">Menor Preço</option>
+                <option value="PriceAsc">Menor Preço (Crescente)</option>
+                <option value="PriceDesc">Maior Preço (Decrescente)</option>
                 <option value="Title">Nome do Jogo</option>
             </select>
         </div>
 
-        <button class="btn-search" onclick="resetAndFetch()">Filtrar</button>
+        <div class="actions">
+            <button class="btn-search" onclick="resetAndFetch()">Filtrar</button>
+            <button class="btn-hot" onclick="filterHotDeals()" title="Mostrar apenas super promoções">🔥 Em Alta</button>
+        </div>
     </div>
 
     <!-- Lista de Jogos -->
@@ -175,6 +184,15 @@
             fetchDeals(false);
         }
 
+        function filterHotDeals() {
+            document.getElementById('searchTitle').value = '';
+            document.getElementById('minPrice').value = 0;
+            document.getElementById('maxPrice').value = 300;
+            document.getElementById('storeSelect').value = '';
+            document.getElementById('sortBy').value = 'Savings';
+            resetAndFetch();
+        }
+
         async function fetchDeals(isAppending = false) {
             if (isLoading || !hasMoreData) return;
             isLoading = true;
@@ -190,15 +208,32 @@
 
             const title = document.getElementById('searchTitle').value;
             const minPriceBRL = parseFloat(document.getElementById('minPrice').value) || 0;
-            const maxPriceBRL = parseFloat(document.getElementById('maxPrice').value) || 100;
+            const maxPriceBRL = parseFloat(document.getElementById('maxPrice').value) || 200;
             const storeID = document.getElementById('storeSelect').value;
-            const sortBy = document.getElementById('sortBy').value;
+            const sortOption = document.getElementById('sortBy').value;
 
-            // Converter R$ para US$ para a requisição
+            // Tratamento da ordenação por preço crescente/decrescente na API
+            let sortByParam = 'Savings';
+            let descParam = 0;
+
+            if (sortOption === 'PriceAsc') {
+                sortByParam = 'Price';
+                descParam = 0; // Preço crescente
+            } else if (sortOption === 'PriceDesc') {
+                sortByParam = 'Price';
+                descParam = 1; // Preço decrescente
+            } else if (sortOption === 'Title') {
+                sortByParam = 'Title';
+                descParam = 0;
+            } else {
+                sortByParam = 'Savings';
+                descParam = 0;
+            }
+
             const minPriceUSD = (minPriceBRL / usdRate).toFixed(2);
             const maxPriceUSD = (maxPriceBRL / usdRate).toFixed(2);
 
-            let url = `https://www.cheapshark.com/api/1.0/deals?lowerPrice=${minPriceUSD}&upperPrice=${maxPriceUSD}&sortBy=${sortBy}&pageNumber=${currentPage}&pageSize=20`;
+            let url = `https://www.cheapshark.com/api/1.0/deals?lowerPrice=${minPriceUSD}&upperPrice=${maxPriceUSD}&sortBy=${sortByParam}&desc=${descParam}&pageNumber=${currentPage}&pageSize=20`;
             
             if (storeID !== "") {
                 url += `&storeID=${storeID}`;
@@ -269,7 +304,7 @@
             }
         }
 
-        // Rolagem infinita
+        // Listener para rolagem infinita
         window.addEventListener('scroll', () => {
             const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
             if (scrollTop + clientHeight >= scrollHeight - 300) {
