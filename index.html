@@ -125,16 +125,21 @@
             </select>
         </div>
 
-        <button class="btn-search" onclick="fetchDeals()">Filtrar</button>
+        <button class="btn-search" onclick="resetAndFetch()">Filtrar</button>
     </div>
 
     <!-- Lista de Jogos -->
     <div id="deals" class="grid">
         <div class="loading">Carregando cotação do Dólar e promoções...</div>
     </div>
+    
+    <div id="loadMoreStatus" style="text-align: center; color: #777; padding: 20px; display: none;">Carregando mais jogos...</div>
 
     <script>
-        let usdRate = 5.0; // Valor de reserva caso ocorra erro na API
+        let usdRate = 5.0; 
+        let currentPage = 0;
+        let isLoading = false;
+        let hasMoreData = true;
 
         const storeNames = {
             "1": "Steam",
@@ -146,7 +151,6 @@
             "25": "Epic Games"
         };
 
-        // Buscar cotação atual do Dólar em BRL
         async function getUSDRate() {
             try {
                 const response = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL');
@@ -155,23 +159,39 @@
                     usdRate = parseFloat(data.USDBRL.bid);
                 }
             } catch (e) {
-                console.warn('Não foi possível obter a cotação em tempo real. Usando taxa estimada.');
+                console.warn('Usando taxa estimada.');
             }
         }
 
-        async function fetchDeals() {
+        // Reseta a paginação e faz nova busca (usado ao alterar filtros ou pesquisar)
+        function resetAndFetch() {
+            currentPage = 0;
+            hasMoreData = true;
+            document.getElementById('deals').innerHTML = '<div class="loading">Buscando ofertas...</div>';
+            fetchDeals(false);
+        }
+
+        async function fetchDeals(isAppending = false) {
+            if (isLoading || !hasMoreData) return;
+            isLoading = true;
+
             const container = document.getElementById('deals');
-            container.innerHTML = '<div class="loading">Buscando ofertas...</div>';
+            const statusIndicator = document.getElementById('loadMoreStatus');
+
+            if (!isAppending) {
+                container.innerHTML = '<div class="loading">Buscando ofertas...</div>';
+            } else {
+                statusIndicator.style.display = 'block';
+            }
 
             const title = document.getElementById('searchTitle').value;
             const maxPriceBRL = parseFloat(document.getElementById('maxPrice').value) || 100;
             const storeID = document.getElementById('storeSelect').value;
             const sortBy = document.getElementById('sortBy').value;
 
-            // Converter R$ para US$ para a chamada da API
             const maxPriceUSD = (maxPriceBRL / usdRate).toFixed(2);
 
-            let url = `https://www.cheapshark.com/api/1.0/deals?upperPrice=${maxPriceUSD}&sortBy=${sortBy}&pageSize=24`;
+            let url = `https://www.cheapshark.com/api/1.0/deals?upperPrice=${maxPriceUSD}&sortBy=${sortBy}&pageNumber=${currentPage}&pageSize=20`;
             
             if (storeID !== "") {
                 url += `&storeID=${storeID}`;
@@ -185,11 +205,23 @@
                 const response = await fetch(url);
                 const deals = await response.json();
                 
-                container.innerHTML = '';
+                if (!isAppending) {
+                    container.innerHTML = '';
+                }
 
                 if (deals.length === 0) {
-                    container.innerHTML = '<div class="loading">Nenhuma promoção encontrada com esses filtros.</div>';
+                    hasMoreData = false;
+                    if (!isAppending) {
+                        container.innerHTML = '<div class="loading">Nenhuma promoção encontrada com esses filtros.</div>';
+                    }
+                    statusIndicator.style.display = 'none';
+                    isLoading = false;
                     return;
+                }
+
+                // Se vieram menos de 20 itens, significa que chegamos ao fim dos resultados da API
+                if (deals.length < 20) {
+                    hasMoreData = false;
                 }
 
                 deals.forEach(deal => {
@@ -219,20 +251,36 @@
                     `;
                     container.appendChild(card);
                 });
+
+                currentPage++;
             } catch (error) {
-                container.innerHTML = '<div class="loading">Erro ao carregar as promoções. Tente novamente.</div>';
+                if (!isAppending) {
+                    container.innerHTML = '<div class="loading">Erro ao carregar as promoções. Tente novamente.</div>';
+                }
+            } finally {
+                isLoading = false;
+                statusIndicator.style.display = 'none';
             }
         }
 
+        // Listener para rolagem infinita
+        window.addEventListener('scroll', () => {
+            const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+            // Quando faltar 300px para chegar ao fim da página, carrega mais
+            if (scrollTop + clientHeight >= scrollHeight - 300) {
+                fetchDeals(true);
+            }
+        });
+
         document.getElementById('searchTitle').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
-                fetchDeals();
+                resetAndFetch();
             }
         });
 
         async function init() {
             await getUSDRate();
-            fetchDeals();
+            fetchDeals(false);
         }
 
         init();
