@@ -130,7 +130,6 @@
             <label for="sortBy">Ordenar por:</label>
             <select id="sortBy">
                 <option value="SavingsDesc">Maior Desconto (%)</option>
-                <option value="SavingsAsc">Menor Desconto (%)</option>
                 <option value="PriceAsc">Menor Preço (Crescente)</option>
                 <option value="PriceDesc">Maior Preço (Decrescente)</option>
                 <option value="Title">Nome do Jogo</option>
@@ -213,22 +212,18 @@
             const storeID = document.getElementById('storeSelect').value;
             const sortOption = document.getElementById('sortBy').value;
 
-            // Mapeamento dos parâmetros de ordenação na API CheapShark
             let sortByParam = 'Savings';
             let descParam = 0;
 
             if (sortOption === 'SavingsDesc') {
                 sortByParam = 'Savings';
-                descParam = 0; // Maior desconto primeiro
-            } else if (sortOption === 'SavingsAsc') {
-                sortByParam = 'Savings';
-                descParam = 1; // Menor desconto primeiro (crescente)
+                descParam = 0;
             } else if (sortOption === 'PriceAsc') {
                 sortByParam = 'Price';
-                descParam = 0; // Preço crescente
+                descParam = 0;
             } else if (sortOption === 'PriceDesc') {
                 sortByParam = 'Price';
-                descParam = 1; // Preço decrescente
+                descParam = 1;
             } else if (sortOption === 'Title') {
                 sortByParam = 'Title';
                 descParam = 0;
