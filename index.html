@@ -204,7 +204,7 @@
     
     <div id="loadMoreStatus" style="text-align: center; color: #777; padding: 20px; display: none;">Carregando mais jogos...</div>
 
-    <!-- Rodapé Institutional -->
+    <!-- Rodapé Institucional -->
     <footer>
         <div>&copy; 2026 Promoções de Jogos — Agregador de Ofertas em Tempo Real</div>
         <div style="margin-top: 10px;">
@@ -319,7 +319,7 @@
 
             if (sortOption === 'SavingsDesc') {
                 sortByParam = 'Savings';
-                descParam = 0; // CheapShark usa desc=0 para colocar as maiores percentagens de desconto no topo
+                descParam = 0;
             } else if (sortOption === 'PriceAsc') {
                 sortByParam = 'Price';
                 descParam = 0;
@@ -334,7 +334,8 @@
             const minPriceUSD = (minPriceBRL / usdRate).toFixed(2);
             const maxPriceUSD = (maxPriceBRL / usdRate).toFixed(2);
 
-            let url = `https://www.cheapshark.com/api/1.0/deals?lowerPrice=${minPriceUSD}&upperPrice=${maxPriceUSD}&sortBy=${sortByParam}&desc=${descParam}&pageNumber=${currentPage}&pageSize=20`;
+            // onSale=1 força a API a trazer APENAS jogos com desconto ativo
+            let url = `https://www.cheapshark.com/api/1.0/deals?onSale=1&lowerPrice=${minPriceUSD}&upperPrice=${maxPriceUSD}&sortBy=${sortByParam}&desc=${descParam}&pageNumber=${currentPage}&pageSize=20`;
             
             if (storeID !== "") {
                 url += `&storeID=${storeID}`;
