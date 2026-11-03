@@ -16,7 +16,6 @@
         body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; margin: 0; padding: 20px 20px 0 20px; display: flex; flex-direction: column; min-height: 100vh; }
         h1 { text-align: center; color: #00ffcc; margin-bottom: 10px; font-size: 28px; }
         
-        /* Bloco de Conteúdo Explicativo para o AdSense */
         .seo-intro {
             max-width: 900px;
             margin: 0 auto 20px auto;
@@ -31,7 +30,6 @@
         }
         .seo-intro p { margin: 5px 0; }
 
-        /* Botões Rápidos de Lojas */
         .quick-stores {
             display: flex;
             justify-content: center;
@@ -56,14 +54,12 @@
             border-color: #00ffcc;
         }
 
-        /* Estilos dos Filtros Principais */
         .controls { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-bottom: 30px; background: #1e1e1e; padding: 20px; border-radius: 8px; border: 1px solid #2a2a2a; }
         .control-group { display: flex; flex-direction: column; gap: 6px; }
         .control-group label { font-size: 13px; color: #aaa; font-weight: bold; }
         input, select { padding: 10px 12px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: #fff; font-size: 14px; }
         input:focus, select:focus { outline: none; border-color: #00ffcc; }
         
-        /* Botões de Ação */
         .actions { display: flex; gap: 8px; align-self: flex-end; flex-wrap: wrap; }
         .btn-search { background: #00ffcc; color: #000; font-weight: bold; border: none; cursor: pointer; padding: 10px 16px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
         .btn-search:hover { background: #00cca3; }
@@ -72,10 +68,8 @@
         .btn-fav-filter { background: #e91e63; color: #fff; font-weight: bold; border: none; cursor: pointer; padding: 10px 16px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
         .btn-fav-filter:hover { background: #c2185b; }
 
-        /* Estilos da Grelha de Jogos */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; flex-grow: 1; }
         
-        /* Estilo do Cartão com Imagem Posicionada */
         .card { 
             background: #1e1e1e; 
             border-radius: 8px; 
@@ -95,7 +89,6 @@
         .img-wrapper { position: relative; width: 100%; height: 130px; }
         .img-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; background-color: #2a2a2a; }
         
-        /* Botão de Favorito no Cartão */
         .fav-btn {
             position: absolute;
             top: 8px;
@@ -130,7 +123,6 @@
         
         .store-tag { font-size: 12px; color: #888; font-style: italic; }
 
-        /* Preços e Botões */
         .card-bottom { margin-top: 15px; display: flex; flex-direction: column; gap: 8px; }
         .price-container { display: flex; flex-direction: column; gap: 2px; }
         .normal-price { text-decoration: line-through; color: #777; font-size: 13px; }
@@ -163,7 +155,6 @@
         .btn:hover { background: #00cca3; }
         .loading { text-align: center; font-size: 18px; color: #aaa; grid-column: 1 / -1; padding: 40px 0; }
 
-        /* Estilos do Rodapé */
         footer { 
             margin-top: 40px; 
             padding: 20px 0; 
@@ -175,7 +166,6 @@
         footer a { color: #00ffcc; text-decoration: none; margin: 0 10px; cursor: pointer; }
         footer a:hover { text-decoration: underline; }
 
-        /* Estilos do Modal Legal */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -219,12 +209,10 @@
 
     <h1>🔥 Promoções de Jogos</h1>
 
-    <!-- Bloco de conteúdo estático para satisfazer o crawler do AdSense -->
     <div class="seo-intro">
         <p>Encontre as melhores <strong>promoções de jogos para PC</strong> em tempo real nas principais lojas digitais, como Steam, Epic Games Store, GOG e Fanatical. Compare preços em Reais (R$), filtre por faixa de valor e descubra descontos imperdíveis atualizados instantaneamente.</p>
     </div>
 
-    <!-- Botões Rápidos de Lojas (Atalhos) -->
     <div class="quick-stores">
         <button class="btn-store active" onclick="selectQuickStore('', this)">Todas</button>
         <button class="btn-store" onclick="selectQuickStore('1', this)">🎮 Steam</button>
@@ -234,7 +222,6 @@
         <button class="btn-store" onclick="selectQuickStore('11', this)">📦 Humble</button>
     </div>
 
-    <!-- Barra de Pesquisa e Filtros -->
     <div class="controls">
         <div class="control-group" style="flex-grow: 1; max-width: 220px;">
             <label for="searchTitle">Buscar por nome:</label>
@@ -282,14 +269,12 @@
         </div>
     </div>
 
-    <!-- Lista de Jogos -->
     <div id="deals" class="grid">
         <div class="loading">Carregando cotação do Dólar e promoções...</div>
     </div>
     
     <div id="loadMoreStatus" style="text-align: center; color: #777; padding: 20px; display: none;">Carregando mais jogos...</div>
 
-    <!-- Rodapé Institucional -->
     <footer>
         <div>&copy; 2026 Promoções de Jogos — Agregador de Ofertas em Tempo Real</div>
         <div style="margin-top: 10px;">
@@ -298,36 +283,25 @@
         </div>
     </footer>
 
-    <!-- Modal Política de Privacidade -->
     <div id="privacyModal" class="modal-overlay" onclick="closeModalOnBg(event, 'privacyModal')">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('privacyModal')">Fechar</button>
             <h2>Política de Privacidade</h2>
             <p>Esta Política de Privacidade descreve como as suas informações pessoais são coletadas, usadas e compartilhadas quando você visita o site Promoções de Jogos.</p>
-            
             <h3>1. Coleta de Dados</h3>
-            <p>Não solicitamos cadastro nem coletamos dados de identificação pessoal direta (como nome ou e-mail). No entanto, dados anônimos de navegação como endereço IP, tipo de navegador e páginas visitadas podem ser coletados automaticamente para fins estatísticos e de desempenho.</p>
-
+            <p>Não solicitamos cadastro nem coletamos dados de identificação pessoal direta.</p>
             <h3>2. Cookies e Google AdSense</h3>
-            <p>Utilizamos serviços de terceiros, como o Google AdSense, para exibir anúncios durante a sua visita ao nosso site. O Google utiliza cookies (como o cookie DART) para veicular anúncios com base nas suas visitas anteriores a este e a outros sites na internet. Você pode optar por desativar a exibição de publicidade personalizada acessando as Configurações de Anúncios do Google.</p>
-
-            <h3>3. Links de Afiliados e Terceiros</h3>
-            <p>Nosso site contém links redirecionando para lojas externas (como Steam, GOG, Epic Games, entre outras). Não nos responsabilizamos pelas políticas de privacidade, conteúdos ou práticas dessas lojas parceiras. Recomendamos que leia a política de cada site visitado.</p>
+            <p>Utilizamos serviços de terceiros, como o Google AdSense, para exibir anúncios.</p>
         </div>
     </div>
 
-    <!-- Modal Termos de Uso -->
     <div id="termsModal" class="modal-overlay" onclick="closeModalOnBg(event, 'termsModal')">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('termsModal')">Fechar</button>
             <h2>Termos de Uso</h2>
-            <p>Ao acessar e navegar pelo site Promoções de Jogos, você concorda em cumprir estes termos de serviço e todas as leis aplicáveis.</p>
-            
-            <h3>1. Isenção de Responsabilidade sobre Preços</h3>
-            <p>Os preços, descontos e disponibilidade dos jogos exibidos no site são obtidos em tempo real via APIs de parceiros (como CheapShark). Embora nos esforcemos para manter as informações atualizadas, o valor final e a disponibilidade são de responsabilidade exclusiva da loja vendedora no momento da finalização da compra.</p>
-
-            <h3>2. Uso do Conteúdo</h3>
-            <p>O site opera estritamente como um agregador informativo de ofertas. Não realizamos vendas diretas, transações financeiras nem processamos dados de pagamento dos usuários.</p>
+            <p>Ao acessar e navegar pelo site Promoções de Jogos, você concorda em cumprir estes termos.</p>
+            <h3>1. Isenção de Responsabilidade</h3>
+            <p>Os preços são obtidos em tempo real via APIs de parceiros.</p>
         </div>
     </div>
 
@@ -349,18 +323,21 @@
         };
 
         function getFavorites() {
-            return JSON.parse(localStorage.getItem('fav_games') || '[]');
+            try {
+                return JSON.parse(localStorage.getItem('fav_games') || '[]');
+            } catch (e) {
+                return [];
+            }
         }
 
-        function toggleFavorite(dealID, dealDataJSON) {
+        function toggleFavorite(dealID, dealTitle, dealNormalPrice, dealSalePrice, dealSavings, dealThumb, dealStoreID) {
             let favs = getFavorites();
-            const dealData = JSON.parse(decodeURIComponent(dealDataJSON));
             const index = favs.findIndex(f => f.dealID === dealID);
 
             if (index > -1) {
                 favs.splice(index, 1);
             } else {
-                favs.push(dealData);
+                favs.push({ dealID, title: dealTitle, normalPrice: dealNormalPrice, salePrice: dealSalePrice, savings: dealSavings, thumb: dealThumb, storeID: dealStoreID });
             }
 
             localStorage.setItem('fav_games', JSON.stringify(favs));
@@ -427,7 +404,7 @@
                     usdRate = parseFloat(data.USDBRL.bid);
                 }
             } catch (e) {
-                console.warn('Usando taxa estimada.');
+                console.warn('Usando taxa padrão.');
             }
         }
 
@@ -463,7 +440,7 @@
                 statusIndicator.style.display = 'block';
             }
 
-            const title = document.getElementById('searchTitle').value;
+            const title = document.getElementById('searchTitle').value.trim();
             const minPriceBRL = parseFloat(document.getElementById('minPrice').value) || 0;
             const maxPriceBRL = parseFloat(document.getElementById('maxPrice').value) || 200;
             const storeID = document.getElementById('storeSelect').value;
@@ -495,12 +472,13 @@
                 url += `&storeID=${storeID}`;
             }
 
-            if (title.trim() !== '') {
+            if (title !== '') {
                 url += `&title=${encodeURIComponent(title)}`;
             }
 
             try {
                 const response = await fetch(url);
+                if (!response.ok) throw new Error('Erro na API');
                 const deals = await response.json();
                 
                 if (!isAppending) {
@@ -543,7 +521,8 @@
                 const savingsPercent = Math.round(deal.savings);
                 const isFav = favs.some(f => f.dealID === deal.dealID);
 
-                const dealJSON = encodeURIComponent(JSON.stringify(deal));
+                // Escape de aspas para evitar erro de sintaxe no onclick
+                const safeTitle = deal.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
                 const card = document.createElement('div');
                 card.className = 'card';
@@ -551,7 +530,7 @@
                     <div class="card-top">
                         <div class="img-wrapper">
                             <img src="${deal.thumb}" alt="${deal.title}">
-                            <button class="fav-btn ${isFav ? 'active' : ''}" data-id="${deal.dealID}" onclick="toggleFavorite('${deal.dealID}', '${dealJSON}')" title="Favoritar">
+                            <button class="fav-btn ${isFav ? 'active' : ''}" data-id="${deal.dealID}" onclick="toggleFavorite('${deal.dealID}', '${safeTitle}', '${deal.normalPrice}', '${deal.salePrice}', '${deal.savings}', '${deal.thumb}', '${deal.storeID}')" title="Favoritar">
                                 ${isFav ? '❤️' : '🤍'}
                             </button>
                         </div>
@@ -574,6 +553,7 @@
         }
 
         window.addEventListener('scroll', () => {
+            if (showingFavoritesOnly || !hasMoreData || isLoading) return;
             const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
             if (scrollTop + clientHeight >= scrollHeight - 300) {
                 fetchDeals(true);
