@@ -363,6 +363,7 @@
             const favs = getFavorites();
             const container = document.getElementById('deals');
             container.innerHTML = '';
+            document.getElementById('loadMoreStatus').style.display = 'none';
 
             if (favs.length === 0) {
                 container.innerHTML = '<div class="loading">Você ainda não tem jogos favoritados. Clique no ❤️ nos cards para salvar!</div>';
@@ -435,6 +436,7 @@
 
             if (!isAppending) {
                 container.innerHTML = '<div class="loading">Buscando ofertas...</div>';
+                statusIndicator.style.display = 'none';
             } else {
                 statusIndicator.style.display = 'block';
             }
@@ -550,10 +552,12 @@
             });
         }
 
+        // Rolagem infinita corrigida com trava de segurança
         window.addEventListener('scroll', () => {
             if (showingFavoritesOnly || !hasMoreData || isLoading) return;
+            
             const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-            if (scrollTop + clientHeight >= scrollHeight - 300) {
+            if (scrollTop + clientHeight >= scrollHeight - 400) {
                 fetchDeals(true);
             }
         });
