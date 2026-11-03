@@ -348,7 +348,6 @@
         let isLoading = false;
         let hasMoreData = true;
         let showingFavoritesOnly = false;
-        let currentLoadedDeals = [];
 
         const storeNames = {
             "1": "Steam",
@@ -360,7 +359,6 @@
             "25": "Epic Games"
         };
 
-        // Gerenciamento de Favoritos (localStorage)
         function getFavorites() {
             return JSON.parse(localStorage.getItem('fav_games') || '[]');
         }
@@ -410,7 +408,6 @@
             renderDealCards(favs, container);
         }
 
-        // Atalhos Rápidos de Lojas
         function selectQuickStore(storeID, btnElement) {
             document.querySelectorAll('.btn-store').forEach(b => b.classList.remove('active'));
             btnElement.classList.add('active');
@@ -429,7 +426,6 @@
             });
         }
 
-        // Modal Controls
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function closeModalOnBg(e, id) { if (e.target.id === id) closeModal(id); }
@@ -520,10 +516,9 @@
                 
                 if (!isAppending) {
                     container.innerHTML = '';
-                    currentLoadedDeals = [];
                 }
 
-                if (deals.length === 0) {
+                if (!Array.isArray(deals) || deals.length === 0) {
                     hasMoreData = false;
                     if (!isAppending) {
                         container.innerHTML = '<div class="loading">Nenhuma promoção encontrada com esses filtros.</div>';
@@ -537,24 +532,22 @@
                     hasMoreData = false;
                 }
 
-                // Carrega os detalhes para obter o menor preço histórico
-                const dealDetailsPromises = deals.map(deal => 
-                    fetch(`https://www.cheapshark.com/api/1.0/deals?id=${deal.dealID}`)
-                        .then(res => res.json())
-                        .catch(() => null)
-                );
-                const dealDetailsArray = await Promise.all(dealDetailsPromises);
-
-                const formattedDeals = deals.map((deal, index) => {
-                    const details = dealDetailsArray[index];
+                // Proteção extra: busca o menor preço individualmente com tratamento de erro por card
+                const formattedDeals = await Promise.all(deals.map(async (deal) => {
                     let lowestBRL = null;
-                    if (details && details.cheapestPrice && details.cheapestPrice.price) {
-                        lowestBRL = (parseFloat(details.cheapestPrice.price) * usdRate).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                    try {
+                        const detailRes = await fetch(`https://www.cheapshark.com/api/1.0/deals?id=${deal.dealID}`);
+                        const details = await detailRes.json();
+                        if (details && details.cheapestPrice && details.cheapestPrice.price) {
+                            lowestBRL = (parseFloat(details.cheapestPrice.price) * usdRate).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                        }
+                    } catch (err) {
+                        // Se falhar o detalhe, ignora e segue sem travar o card
                     }
                     return { ...deal, lowestPriceBRL: lowestBRL };
-                });
+                }));
 
-                renderDealCards(formattedDeals, container, isAppending);
+                renderDealCards(formattedDeals, container);
                 currentPage++;
             } catch (error) {
                 if (!isAppending) {
@@ -566,7 +559,7 @@
             }
         }
 
-        function renderDealCards(dealsArray, container, isAppending = false) {
+        function renderDealCards(dealsArray, container) {
             const favs = getFavorites();
 
             dealsArray.forEach(deal => {
