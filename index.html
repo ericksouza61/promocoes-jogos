@@ -130,17 +130,6 @@
         
         .store-tag { font-size: 12px; color: #888; font-style: italic; }
 
-        /* Histórico de Menor Preço */
-        .historical-lowest {
-            font-size: 11px;
-            color: #ffcc00;
-            background: rgba(255, 204, 0, 0.1);
-            padding: 4px 8px;
-            border-radius: 4px;
-            border: 1px solid rgba(255, 204, 0, 0.25);
-            margin-top: 4px;
-        }
-
         /* Preços e Botões */
         .card-bottom { margin-top: 15px; display: flex; flex-direction: column; gap: 8px; }
         .price-container { display: flex; flex-direction: column; gap: 2px; }
@@ -232,7 +221,7 @@
 
     <!-- Bloco de conteúdo estático para satisfazer o crawler do AdSense -->
     <div class="seo-intro">
-        <p>Encontre as melhores <strong>promoções de jogos para PC</strong> em tempo real nas principais lojas digitais, como Steam, Epic Games Store, GOG e Fanatical. Compare preços em Reais (R$), consulte o <strong>menor preço histórico</strong> de cada jogo, filtre por faixa de valor e descubra descontos imperdíveis atualizados instantaneamente.</p>
+        <p>Encontre as melhores <strong>promoções de jogos para PC</strong> em tempo real nas principais lojas digitais, como Steam, Epic Games Store, GOG e Fanatical. Compare preços em Reais (R$), filtre por faixa de valor e descubra descontos imperdíveis atualizados instantaneamente.</p>
     </div>
 
     <!-- Botões Rápidos de Lojas (Atalhos) -->
@@ -532,22 +521,7 @@
                     hasMoreData = false;
                 }
 
-                // Proteção extra: busca o menor preço individualmente com tratamento de erro por card
-                const formattedDeals = await Promise.all(deals.map(async (deal) => {
-                    let lowestBRL = null;
-                    try {
-                        const detailRes = await fetch(`https://www.cheapshark.com/api/1.0/deals?id=${deal.dealID}`);
-                        const details = await detailRes.json();
-                        if (details && details.cheapestPrice && details.cheapestPrice.price) {
-                            lowestBRL = (parseFloat(details.cheapestPrice.price) * usdRate).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                        }
-                    } catch (err) {
-                        // Se falhar o detalhe, ignora e segue sem travar o card
-                    }
-                    return { ...deal, lowestPriceBRL: lowestBRL };
-                }));
-
-                renderDealCards(formattedDeals, container);
+                renderDealCards(deals, container);
                 currentPage++;
             } catch (error) {
                 if (!isAppending) {
@@ -569,11 +543,6 @@
                 const savingsPercent = Math.round(deal.savings);
                 const isFav = favs.some(f => f.dealID === deal.dealID);
 
-                let lowestPriceHTML = '';
-                if (deal.lowestPriceBRL) {
-                    lowestPriceHTML = `<div class="historical-lowest">📉 Menor histórico: <strong>${deal.lowestPriceBRL}</strong></div>`;
-                }
-
                 const dealJSON = encodeURIComponent(JSON.stringify(deal));
 
                 const card = document.createElement('div');
@@ -588,7 +557,6 @@
                         </div>
                         <div class="title" title="${deal.title}">${deal.title}</div>
                         <div class="store-tag">🎮 Loja: ${storeName}</div>
-                        ${lowestPriceHTML}
                     </div>
                     <div class="card-bottom">
                         <div class="price-container">
