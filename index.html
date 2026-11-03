@@ -19,7 +19,7 @@
         /* Bloco de Conteúdo Explicativo para o AdSense */
         .seo-intro {
             max-width: 900px;
-            margin: 0 auto 25px auto;
+            margin: 0 auto 20px auto;
             background: #1e1e1e;
             padding: 15px 20px;
             border-radius: 8px;
@@ -31,7 +31,32 @@
         }
         .seo-intro p { margin: 5px 0; }
 
-        /* Estilos dos Filtros */
+        /* Botões Rápidos de Lojas */
+        .quick-stores {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .btn-store {
+            background: #2a2a2a;
+            color: #ccc;
+            border: 1px solid #333;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-store:hover, .btn-store.active {
+            background: #00ffcc;
+            color: #000;
+            font-weight: bold;
+            border-color: #00ffcc;
+        }
+
+        /* Estilos dos Filtros Principais */
         .controls { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-bottom: 30px; background: #1e1e1e; padding: 20px; border-radius: 8px; border: 1px solid #2a2a2a; }
         .control-group { display: flex; flex-direction: column; gap: 6px; }
         .control-group label { font-size: 13px; color: #aaa; font-weight: bold; }
@@ -39,16 +64,18 @@
         input:focus, select:focus { outline: none; border-color: #00ffcc; }
         
         /* Botões de Ação */
-        .actions { display: flex; gap: 10px; align-self: flex-end; }
-        .btn-search { background: #00ffcc; color: #000; font-weight: bold; border: none; cursor: pointer; padding: 10px 20px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
+        .actions { display: flex; gap: 8px; align-self: flex-end; flex-wrap: wrap; }
+        .btn-search { background: #00ffcc; color: #000; font-weight: bold; border: none; cursor: pointer; padding: 10px 16px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
         .btn-search:hover { background: #00cca3; }
-        .btn-hot { background: #ff4500; color: #fff; font-weight: bold; border: none; cursor: pointer; padding: 10px 20px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
+        .btn-hot { background: #ff4500; color: #fff; font-weight: bold; border: none; cursor: pointer; padding: 10px 16px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
         .btn-hot:hover { background: #e03d00; }
+        .btn-fav-filter { background: #e91e63; color: #fff; font-weight: bold; border: none; cursor: pointer; padding: 10px 16px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
+        .btn-fav-filter:hover { background: #c2185b; }
 
         /* Estilos da Grelha de Jogos */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; flex-grow: 1; }
         
-        /* Estilo do Cartão */
+        /* Estilo do Cartão com Imagem Posicionada */
         .card { 
             background: #1e1e1e; 
             border-radius: 8px; 
@@ -59,12 +86,36 @@
             justify-content: space-between; 
             border: 1px solid #262626;
             transition: transform 0.2s, border-color 0.2s;
+            position: relative;
         }
         .card:hover { transform: translateY(-3px); border-color: #00ffcc; }
         
         .card-top { display: flex; flex-direction: column; gap: 8px; }
-        .card img { width: 100%; height: 130px; object-fit: cover; border-radius: 6px; background-color: #2a2a2a; }
         
+        .img-wrapper { position: relative; width: 100%; height: 130px; }
+        .img-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; background-color: #2a2a2a; }
+        
+        /* Botão de Favorito no Cartão */
+        .fav-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #fff;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .fav-btn:hover { transform: scale(1.15); background: rgba(0, 0, 0, 0.9); }
+        .fav-btn.active { color: #e91e63; }
+
         .title { 
             font-size: 15px; 
             font-weight: bold; 
@@ -184,6 +235,16 @@
         <p>Encontre as melhores <strong>promoções de jogos para PC</strong> em tempo real nas principais lojas digitais, como Steam, Epic Games Store, GOG e Fanatical. Compare preços em Reais (R$), consulte o <strong>menor preço histórico</strong> de cada jogo, filtre por faixa de valor e descubra descontos imperdíveis atualizados instantaneamente.</p>
     </div>
 
+    <!-- Botões Rápidos de Lojas (Atalhos) -->
+    <div class="quick-stores">
+        <button class="btn-store active" onclick="selectQuickStore('', this)">Todas</button>
+        <button class="btn-store" onclick="selectQuickStore('1', this)">🎮 Steam</button>
+        <button class="btn-store" onclick="selectQuickStore('25', this)">🚀 Epic Games</button>
+        <button class="btn-store" onclick="selectQuickStore('7', this)">👾 GOG</button>
+        <button class="btn-store" onclick="selectQuickStore('15', this)">🔥 Fanatical</button>
+        <button class="btn-store" onclick="selectQuickStore('11', this)">📦 Humble</button>
+    </div>
+
     <!-- Barra de Pesquisa e Filtros -->
     <div class="controls">
         <div class="control-group" style="flex-grow: 1; max-width: 220px;">
@@ -203,7 +264,7 @@
 
         <div class="control-group">
             <label for="storeSelect">Loja:</label>
-            <select id="storeSelect">
+            <select id="storeSelect" onchange="syncQuickStoreButtons(this.value)">
                 <option value="">Todas as Lojas</option>
                 <option value="1">Steam</option>
                 <option value="7">GOG</option>
@@ -228,6 +289,7 @@
         <div class="actions">
             <button class="btn-search" onclick="resetAndFetch()">Filtrar</button>
             <button class="btn-hot" onclick="filterHotDeals()" title="Mostrar apenas super promoções">🔥 Em Alta</button>
+            <button class="btn-fav-filter" onclick="showOnlyFavorites()" title="Ver jogos favoritados">❤️ Favoritos</button>
         </div>
     </div>
 
@@ -285,6 +347,8 @@
         let currentPage = 0;
         let isLoading = false;
         let hasMoreData = true;
+        let showingFavoritesOnly = false;
+        let currentLoadedDeals = [];
 
         const storeNames = {
             "1": "Steam",
@@ -295,6 +359,75 @@
             "15": "Fanatical",
             "25": "Epic Games"
         };
+
+        // Gerenciamento de Favoritos (localStorage)
+        function getFavorites() {
+            return JSON.parse(localStorage.getItem('fav_games') || '[]');
+        }
+
+        function toggleFavorite(dealID, dealDataJSON) {
+            let favs = getFavorites();
+            const dealData = JSON.parse(decodeURIComponent(dealDataJSON));
+            const index = favs.findIndex(f => f.dealID === dealID);
+
+            if (index > -1) {
+                favs.splice(index, 1);
+            } else {
+                favs.push(dealData);
+            }
+
+            localStorage.setItem('fav_games', JSON.stringify(favs));
+
+            if (showingFavoritesOnly) {
+                showOnlyFavorites();
+            } else {
+                updateFavButtonsState();
+            }
+        }
+
+        function updateFavButtonsState() {
+            const favs = getFavorites();
+            document.querySelectorAll('.fav-btn').forEach(btn => {
+                const id = btn.getAttribute('data-id');
+                const isFav = favs.some(f => f.dealID === id);
+                btn.classList.toggle('active', isFav);
+                btn.innerHTML = isFav ? '❤️' : '🤍';
+            });
+        }
+
+        function showOnlyFavorites() {
+            showingFavoritesOnly = true;
+            hasMoreData = false;
+            const favs = getFavorites();
+            const container = document.getElementById('deals');
+            container.innerHTML = '';
+
+            if (favs.length === 0) {
+                container.innerHTML = '<div class="loading">Você ainda não tem jogos favoritados. Clique no ❤️ nos cards para salvar!</div>';
+                return;
+            }
+
+            renderDealCards(favs, container);
+        }
+
+        // Atalhos Rápidos de Lojas
+        function selectQuickStore(storeID, btnElement) {
+            document.querySelectorAll('.btn-store').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('storeSelect').value = storeID;
+            resetAndFetch();
+        }
+
+        function syncQuickStoreButtons(storeID) {
+            document.querySelectorAll('.btn-store').forEach(b => {
+                const attr = b.getAttribute('onclick');
+                if (attr.includes(`'${storeID}'`)) {
+                    b.classList.add('active');
+                } else {
+                    b.classList.remove('active');
+                }
+            });
+        }
 
         // Modal Controls
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
@@ -314,6 +447,7 @@
         }
 
         function resetAndFetch() {
+            showingFavoritesOnly = false;
             currentPage = 0;
             hasMoreData = true;
             document.getElementById('deals').innerHTML = '<div class="loading">Buscando ofertas...</div>';
@@ -321,16 +455,18 @@
         }
 
         function filterHotDeals() {
+            showingFavoritesOnly = false;
             document.getElementById('searchTitle').value = '';
             document.getElementById('minPrice').value = 0;
             document.getElementById('maxPrice').value = 300;
             document.getElementById('storeSelect').value = '';
+            syncQuickStoreButtons('');
             document.getElementById('sortBy').value = 'SavingsDesc';
             resetAndFetch();
         }
 
         async function fetchDeals(isAppending = false) {
-            if (isLoading || !hasMoreData) return;
+            if (isLoading || !hasMoreData || showingFavoritesOnly) return;
             isLoading = true;
 
             const container = document.getElementById('deals');
@@ -384,6 +520,7 @@
                 
                 if (!isAppending) {
                     container.innerHTML = '';
+                    currentLoadedDeals = [];
                 }
 
                 if (deals.length === 0) {
@@ -400,7 +537,7 @@
                     hasMoreData = false;
                 }
 
-                // Carrega os detalhes de cada oferta para obter o menor preço histórico
+                // Carrega os detalhes para obter o menor preço histórico
                 const dealDetailsPromises = deals.map(deal => 
                     fetch(`https://www.cheapshark.com/api/1.0/deals?id=${deal.dealID}`)
                         .then(res => res.json())
@@ -408,43 +545,16 @@
                 );
                 const dealDetailsArray = await Promise.all(dealDetailsPromises);
 
-                deals.forEach((deal, index) => {
-                    const normalPriceBRL = (parseFloat(deal.normalPrice) * usdRate).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                    const salePriceBRL = (parseFloat(deal.salePrice) * usdRate).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                    const storeName = storeNames[deal.storeID] || 'Loja Parceira';
-                    const savingsPercent = Math.round(deal.savings);
-
-                    // Extrai o menor preço histórico da resposta de detalhes
+                const formattedDeals = deals.map((deal, index) => {
                     const details = dealDetailsArray[index];
-                    let lowestPriceHTML = '';
+                    let lowestBRL = null;
                     if (details && details.cheapestPrice && details.cheapestPrice.price) {
-                        const lowestPriceBRL = (parseFloat(details.cheapestPrice.price) * usdRate).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                        lowestPriceHTML = `<div class="historical-lowest">📉 Menor histórico: <strong>${lowestPriceBRL}</strong></div>`;
+                        lowestBRL = (parseFloat(details.cheapestPrice.price) * usdRate).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                     }
-
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    card.innerHTML = `
-                        <div class="card-top">
-                            <img src="${deal.thumb}" alt="${deal.title}">
-                            <div class="title" title="${deal.title}">${deal.title}</div>
-                            <div class="store-tag">🎮 Loja: ${storeName}</div>
-                            ${lowestPriceHTML}
-                        </div>
-                        <div class="card-bottom">
-                            <div class="price-container">
-                                <div class="normal-price">${normalPriceBRL}</div>
-                                <div class="price-row">
-                                    <div class="price">${salePriceBRL}</div>
-                                    <div class="badge-discount">-${savingsPercent}%</div>
-                                </div>
-                            </div>
-                            <a class="btn" href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank" rel="noopener noreferrer">Ver Oferta</a>
-                        </div>
-                    `;
-                    container.appendChild(card);
+                    return { ...deal, lowestPriceBRL: lowestBRL };
                 });
 
+                renderDealCards(formattedDeals, container, isAppending);
                 currentPage++;
             } catch (error) {
                 if (!isAppending) {
@@ -454,6 +564,52 @@
                 isLoading = false;
                 statusIndicator.style.display = 'none';
             }
+        }
+
+        function renderDealCards(dealsArray, container, isAppending = false) {
+            const favs = getFavorites();
+
+            dealsArray.forEach(deal => {
+                const normalPriceBRL = (parseFloat(deal.normalPrice) * usdRate).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                const salePriceBRL = (parseFloat(deal.salePrice) * usdRate).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                const storeName = storeNames[deal.storeID] || 'Loja Parceira';
+                const savingsPercent = Math.round(deal.savings);
+                const isFav = favs.some(f => f.dealID === deal.dealID);
+
+                let lowestPriceHTML = '';
+                if (deal.lowestPriceBRL) {
+                    lowestPriceHTML = `<div class="historical-lowest">📉 Menor histórico: <strong>${deal.lowestPriceBRL}</strong></div>`;
+                }
+
+                const dealJSON = encodeURIComponent(JSON.stringify(deal));
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-top">
+                        <div class="img-wrapper">
+                            <img src="${deal.thumb}" alt="${deal.title}">
+                            <button class="fav-btn ${isFav ? 'active' : ''}" data-id="${deal.dealID}" onclick="toggleFavorite('${deal.dealID}', '${dealJSON}')" title="Favoritar">
+                                ${isFav ? '❤️' : '🤍'}
+                            </button>
+                        </div>
+                        <div class="title" title="${deal.title}">${deal.title}</div>
+                        <div class="store-tag">🎮 Loja: ${storeName}</div>
+                        ${lowestPriceHTML}
+                    </div>
+                    <div class="card-bottom">
+                        <div class="price-container">
+                            <div class="normal-price">${normalPriceBRL}</div>
+                            <div class="price-row">
+                                <div class="price">${salePriceBRL}</div>
+                                <div class="badge-discount">-${savingsPercent}%</div>
+                            </div>
+                        </div>
+                        <a class="btn" href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank" rel="noopener noreferrer">Ver Oferta</a>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
         }
 
         window.addEventListener('scroll', () => {
