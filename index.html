@@ -226,7 +226,7 @@
 
     <div class="quick-stores">
         <button class="btn-store active" onclick="selectQuickStore('', this)">Todas</button>
-        <button class="btn-store" onclick="selectQuickStore('1', this)">🎮 Steam</button>
+        <button class="btn-store" onclick="selectQuickStore('0', this)">🎮 Steam</button>
         <button class="btn-store" onclick="selectQuickStore('25', this)">🚀 Epic Games</button>
         <button class="btn-store" onclick="selectQuickStore('7', this)">👾 GOG</button>
         <button class="btn-store" onclick="selectQuickStore('15', this)">🔥 Fanatical</button>
@@ -253,7 +253,7 @@
             <label for="storeSelect">Loja:</label>
             <select id="storeSelect" onchange="syncQuickStoreButtons(this.value)">
                 <option value="">Todas as Lojas</option>
-                <option value="1">Steam</option>
+                <option value="0">Steam</option>
                 <option value="7">GOG</option>
                 <option value="25">Epic Games Store</option>
                 <option value="11">Humble Store</option>
@@ -320,7 +320,7 @@
         let historyCache = new Map();
 
         const storeNames = {
-            "1": "Steam",
+            "0": "Steam",
             "2": "GamersGate",
             "3": "GreenManGaming",
             "7": "GOG",
@@ -337,7 +337,6 @@
             }
         }
 
-        // Atualiza o contador no botão de favoritos dinamicamente
         function updateFavCounter() {
             const favs = getFavorites();
             const btn = document.getElementById('favFilterBtn');
@@ -511,7 +510,12 @@
                 if (!Array.isArray(deals) || deals.length === 0) {
                     hasMoreData = false;
                     if (!isAppending) {
-                        container.innerHTML = '<div class="loading">Nenhuma promoção encontrada com esses filtros.</div>';
+                        // Ideia 2 implementada: Mensagem amigável com sugestão de limpeza de filtros
+                        container.innerHTML = `
+                            <div class="loading" style="line-height: 1.6;">
+                                🔍 Nenhuma promoção encontrada com esses filtros.<br>
+                                <span style="font-size: 14px; color: #888;">Tente limpar o nome da busca, alterar a faixa de preço ou escolher "Todas as Lojas".</span>
+                            </div>`;
                     }
                     statusIndicator.style.display = 'none';
                     isLoading = false;
@@ -623,7 +627,7 @@
 
         async function init() {
             await getUSDRate();
-            updateFavCounter(); // Inicializa o contador ao abrir o site
+            updateFavCounter();
             fetchDeals(false);
         }
 
