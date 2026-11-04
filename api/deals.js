@@ -1,21 +1,11 @@
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
 
     try {
-        const protocol = req.headers['x-forwarded-proto'] || 'https';
-        const host = req.headers.host;
-        const fullUrl = new URL(req.url, `${protocol}://${host}`);
-        
-        // Remove o caminho '/api/deals' e mantém apenas os parâmetros de consulta (query string)
-        const searchParams = fullUrl.searchParams;
-        
-        const targetUrl = `https://www.cheapshark.com/api/1.0/deals?${searchParams.toString()}`;
+        // Extrai a query string diretamente do objeto de requisição da Vercel
+        const urlParams = new URLSearchParams(req.query).toString();
+        const targetUrl = `https://www.cheapshark.com/api/1.0/deals?${urlParams || 'onSale=1&pageSize=20'}`;
 
         const apiResponse = await fetch(targetUrl);
         if (!apiResponse.ok) {
