@@ -264,7 +264,7 @@
 
         <div class="actions">
             <button class="btn-search" onclick="resetAndFetch()">Filtrar</button>
-            <button class="btn-hot" onclick="filterHotDeals()" title="Mostrar apenas super promoções">🔥 Em Alta</button>
+            <button class="btn-hot" onclick="filterHotDesals()" title="Mostrar apenas super promoções">🔥 Em Alta</button>
             <button class="btn-fav-filter" id="favFilterBtn" onclick="showOnlyFavorites()" title="Ver jogos favoritados">❤️ Favoritos (0)</button>
         </div>
     </div>
@@ -443,7 +443,7 @@
             resetAndFetch();
         }
 
-        // Abordagem blindada com múltiplos proxies de fallback automáticos para contornar bloqueios de CORS da Vercel
+        // Sistema de busca resiliente com múltiplos proxies e botão de recarga manual em caso de falha
         async function fetchDeals(isAppending = false) {
             if (isLoading || !hasMoreData || showingFavoritesOnly) return;
             isLoading = true;
@@ -494,11 +494,10 @@
                 targetUrl += `&title=${encodeURIComponent(title)}`;
             }
 
-            // Lista de rotas de proxy seguras para garantir estabilidade absoluta no navegador
             const proxies = [
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
                 `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-                targetUrl // fallback direto caso o ambiente permita
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+                targetUrl
             ];
 
             let deals = null;
@@ -508,12 +507,11 @@
                     const response = await fetch(proxyUrl);
                     if (response.ok) {
                         const data = await response.json();
-                        // Se o allorigins retornar encapsulado, trata aqui
                         deals = Array.isArray(data) ? data : (data.contents ? JSON.parse(data.contents) : data);
                         if (Array.isArray(deals)) break;
                     }
                 } catch (e) {
-                    continue; // tenta o próximo proxy da lista
+                    continue;
                 }
             }
 
@@ -522,7 +520,12 @@
 
             if (!Array.isArray(deals)) {
                 if (!isAppending) {
-                    container.innerHTML = '<div class="loading">Erro ao carregar as promoções. Tente novamente.</div>';
+                    container.innerHTML = `
+                        <div class="loading" style="line-height: 1.8;">
+                            ⚠️ Não foi possível carregar as promoções no momento.<br>
+                            <span style="font-size: 14px; color: #888;">Isso pode ocorrer devido a instabilidades temporárias na API de ofertas.</span><br><br>
+                            <button onclick="resetAndFetch()" style="background: #00ffcc; color: #000; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">Tentar Novamente</button>
+                        </div>`;
                 }
                 return;
             }
