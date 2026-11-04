@@ -394,13 +394,11 @@
             renderDealCards(favs, container);
         }
 
-        // Função de clique rápido ajustada para resetar o teto de preço e garantir resultados
         function selectQuickStore(storeID, btnElement) {
             document.querySelectorAll('.btn-store').forEach(b => b.classList.remove('active'));
             btnElement.classList.add('active');
             document.getElementById('storeSelect').value = storeID;
             
-            // Garante teto maior ao filtrar por loja específica para evitar tela vazia
             if (storeID !== "") {
                 document.getElementById('maxPrice').value = 300;
             }
@@ -439,6 +437,7 @@
             showingFavoritesOnly = false;
             currentPage = 0;
             hasMoreData = true;
+            isLoading = false;
             globalDealsMap.clear();
             document.getElementById('deals').innerHTML = '<div class="loading">Buscando ofertas...</div>';
             fetchDeals(false);
@@ -616,11 +615,12 @@
             });
         }
 
+        // Rolagem infinita estabilizada sem tremores
         window.addEventListener('scroll', () => {
             if (showingFavoritesOnly || !hasMoreData || isLoading) return;
             
             const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-            if (scrollTop + clientHeight >= scrollHeight - 400) {
+            if (scrollTop + clientHeight >= scrollHeight - 500) {
                 fetchDeals(true);
             }
         });
