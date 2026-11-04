@@ -483,18 +483,21 @@
             const minPriceUSD = (minPriceBRL / usdRate).toFixed(2);
             const maxPriceUSD = (maxPriceBRL / usdRate).toFixed(2);
 
-            let url = `https://www.cheapshark.com/api/1.0/deals?onSale=1&lowerPrice=${minPriceUSD}&upperPrice=${maxPriceUSD}&sortBy=${sortByParam}&desc=${descParam}&pageNumber=${currentPage}&pageSize=20`;
+            let targetUrl = `https://www.cheapshark.com/api/1.0/deals?onSale=1&lowerPrice=${minPriceUSD}&upperPrice=${maxPriceUSD}&sortBy=${sortByParam}&desc=${descParam}&pageNumber=${currentPage}&pageSize=20`;
             
             if (storeID !== "") {
-                url += `&storeID=${storeID}`;
+                targetUrl += `&storeID=${storeID}`;
             }
 
             if (title !== '') {
-                url += `&title=${encodeURIComponent(title)}`;
+                targetUrl += `&title=${encodeURIComponent(title)}`;
             }
 
+            // Encaminha a requisição através de um Proxy CORS público e gratuito
+            const proxiedUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+
             try {
-                const response = await fetch(url);
+                const response = await fetch(proxiedUrl);
                 if (!response.ok) throw new Error('Erro na API');
                 const deals = await response.json();
                 
