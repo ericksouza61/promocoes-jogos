@@ -246,7 +246,7 @@
 
         <div class="control-group">
             <label for="maxPrice">Preço máx. (R$):</label>
-            <input type="number" id="maxPrice" value="200" min="5" max="1000" style="width: 95px;">
+            <input type="number" id="maxPrice" value="300" min="5" max="1000" style="width: 95px;">
         </div>
 
         <div class="control-group">
@@ -394,10 +394,17 @@
             renderDealCards(favs, container);
         }
 
+        // Função de clique rápido ajustada para resetar o teto de preço e garantir resultados
         function selectQuickStore(storeID, btnElement) {
             document.querySelectorAll('.btn-store').forEach(b => b.classList.remove('active'));
             btnElement.classList.add('active');
             document.getElementById('storeSelect').value = storeID;
+            
+            // Garante teto maior ao filtrar por loja específica para evitar tela vazia
+            if (storeID !== "") {
+                document.getElementById('maxPrice').value = 300;
+            }
+            
             resetAndFetch();
         }
 
@@ -464,7 +471,7 @@
 
             const title = document.getElementById('searchTitle').value.trim();
             const minPriceBRL = parseFloat(document.getElementById('minPrice').value) || 0;
-            const maxPriceBRL = parseFloat(document.getElementById('maxPrice').value) || 200;
+            const maxPriceBRL = parseFloat(document.getElementById('maxPrice').value) || 300;
             const storeID = document.getElementById('storeSelect').value;
             const sortOption = document.getElementById('sortBy').value;
 
@@ -510,7 +517,6 @@
                 if (!Array.isArray(deals) || deals.length === 0) {
                     hasMoreData = false;
                     if (!isAppending) {
-                        // Ideia 2 implementada: Mensagem amigável com sugestão de limpeza de filtros
                         container.innerHTML = `
                             <div class="loading" style="line-height: 1.6;">
                                 🔍 Nenhuma promoção encontrada com esses filtros.<br>
