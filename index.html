@@ -123,7 +123,6 @@
         
         .store-tag { font-size: 12px; color: #888; font-style: italic; }
 
-        /* Estilo elegante e limpo para o Menor Preço Histórico */
         .historical-lowest {
             font-size: 11px;
             color: #ffcc00;
@@ -277,7 +276,7 @@
         <div class="actions">
             <button class="btn-search" onclick="resetAndFetch()">Filtrar</button>
             <button class="btn-hot" onclick="filterHotDeals()" title="Mostrar apenas super promoções">🔥 Em Alta</button>
-            <button class="btn-fav-filter" onclick="showOnlyFavorites()" title="Ver jogos favoritados">❤️ Favoritos</button>
+            <button class="btn-fav-filter" id="favFilterBtn" onclick="showOnlyFavorites()" title="Ver jogos favoritados">❤️ Favoritos (0)</button>
         </div>
     </div>
 
@@ -318,7 +317,7 @@
         let hasMoreData = true;
         let showingFavoritesOnly = false;
         let globalDealsMap = new Map();
-        let historyCache = new Map(); // Cache local para evitar requisições repetidas
+        let historyCache = new Map();
 
         const storeNames = {
             "1": "Steam",
@@ -338,6 +337,15 @@
             }
         }
 
+        // Atualiza o contador no botão de favoritos dinamicamente
+        function updateFavCounter() {
+            const favs = getFavorites();
+            const btn = document.getElementById('favFilterBtn');
+            if (btn) {
+                btn.textContent = `❤️ Favoritos (${favs.length})`;
+            }
+        }
+
         function toggleFavorite(dealID) {
             let favs = getFavorites();
             const index = favs.findIndex(f => f.dealID === dealID);
@@ -352,6 +360,7 @@
             }
 
             localStorage.setItem('fav_games', JSON.stringify(favs));
+            updateFavCounter();
 
             if (showingFavoritesOnly) {
                 showOnlyFavorites();
@@ -526,7 +535,6 @@
             }
         }
 
-        // Função otimizada que busca o histórico usando o endpoint de jogos da CheapShark em segundo plano (com cache)
         async function loadLowestPrice(gameID, titleQuery, elementId) {
             const el = document.getElementById(elementId);
             if (!el) return;
@@ -537,7 +545,6 @@
             }
 
             try {
-                // Consulta limpa pelo título do jogo na API de jogos do CheapShark
                 const res = await fetch(`https://www.cheapshark.com/api/1.0/games?title=${encodeURIComponent(titleQuery)}&limit=1`);
                 if (!res.ok) {
                     el.style.display = 'none';
@@ -595,7 +602,6 @@
                 `;
                 container.appendChild(card);
 
-                // Dispara a busca do histórico de forma isolada, sem bloquear a UI e com cache
                 loadLowestPrice(deal.gameID, deal.title, `history-${deal.dealID}-${deal.gameID}`);
             });
         }
@@ -617,6 +623,7 @@
 
         async function init() {
             await getUSDRate();
+            updateFavCounter(); // Inicializa o contador ao abrir o site
             fetchDeals(false);
         }
 
