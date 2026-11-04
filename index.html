@@ -493,8 +493,8 @@
                 targetUrl += `&title=${encodeURIComponent(title)}`;
             }
 
-            // Encaminha a requisição através de um Proxy CORS público e gratuito
-            const proxiedUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+            // Utiliza o corsproxy.io para garantir resposta JSON direta e sem bloqueios de segurança
+            const proxiedUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
 
             try {
                 const response = await fetch(proxiedUrl);
