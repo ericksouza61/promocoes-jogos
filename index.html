@@ -318,6 +318,7 @@
         let showingFavoritesOnly = false;
         let globalDealsMap = new Map();
         let historyCache = new Map();
+        let scrollTimeout = null;
 
         const storeNames = {
             "0": "Steam",
@@ -615,14 +616,17 @@
             });
         }
 
-        // Rolagem infinita estabilizada sem tremores
+        // Rolagem infinita com Debounce e controle rigoroso para eliminar o tremor
         window.addEventListener('scroll', () => {
             if (showingFavoritesOnly || !hasMoreData || isLoading) return;
-            
-            const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-            if (scrollTop + clientHeight >= scrollHeight - 500) {
-                fetchDeals(true);
-            }
+
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+                if (scrollTop + clientHeight >= scrollHeight - 600) {
+                    fetchDeals(true);
+                }
+            }, 100);
         });
 
         document.getElementById('searchTitle').addEventListener('keypress', function (e) {
