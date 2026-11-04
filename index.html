@@ -443,6 +443,7 @@
             resetAndFetch();
         }
 
+        // Função de busca inteligente com múltiplos endpoints públicos garantidos para frontend puro
         async function fetchDeals(isAppending = false) {
             if (isLoading || !hasMoreData || showingFavoritesOnly) return;
             isLoading = true;
@@ -474,42 +475,36 @@
             const minPriceUSD = (minPriceBRL / usdRate).toFixed(2);
             const maxPriceUSD = (maxPriceBRL / usdRate).toFixed(2);
 
-            // Comunicação limpa e direta com a Serverless Function interna da Vercel (/api/deals)
-            let url = `/api/deals?onSale=1&lowerPrice=${minPriceUSD}&upperPrice=${maxPriceUSD}&sortBy=${sortByParam}&desc=${descParam}&pageNumber=${currentPage}&pageSize=20`;
+            let targetUrl = `https://www.cheapshark.com/api/1.0/deals?onSale=1&lowerPrice=${minPriceUSD}&upperPrice=${maxPriceUSD}&sortBy=${sortByParam}&desc=${descParam}&pageNumber=${currentPage}&pageSize=20`;
             
-            if (storeID !== "") url += `&storeID=${storeID}`;
-            if (title !== '') url += `&title=${encodeURIComponent(title)}`;
+            if (storeID !== "") targetUrl += `&storeID=${storeID}`;
+            if (title !== '') targetUrl += `&title=${encodeURIComponent(title)}`;
 
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Erro na requisição');
-                const deals = await response.json();
+            // Lista de proxies codificados seguros para evitar qualquer falha de CORS no navegador
+            const queryProxies = [
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+                `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
+            ];
 
-                isLoading = false;
-                statusIndicator.style.display = 'none';
+            let deals = null;
 
-                if (!isAppending) container.innerHTML = '';
-
-                if (!Array.isArray(deals) || deals.length === 0) {
-                    hasMoreData = false;
-                    if (!isAppending) {
-                        container.innerHTML = `
-                            <div class="loading" style="line-height: 1.6;">
-                                🔍 Nenhuma promoção encontrada com esses filtros.<br>
-                                <span style="font-size: 14px; color: #888;">Tente limpar a busca ou alterar a faixa de preço.</span>
-                            </div>`;
+            for (let pUrl of queryProxies) {
+                try {
+                    const response = await fetch(pUrl);
+                    if (response.ok) {
+                        const data = await response.json();
+                        deals = Array.isArray(data) ? data : (data.contents ? JSON.parse(data.contents) : data);
+                        if (Array.isArray(deals) && deals.length > 0) break;
                     }
-                    return;
+                } catch (err) {
+                    continue;
                 }
+            }
 
-                if (deals.length < 20) hasMoreData = false;
+            isLoading = false;
+            statusIndicator.style.display = 'none';
 
-                deals.forEach(d => globalDealsMap.set(d.dealID, d));
-                renderDealCards(deals, container);
-                currentPage++;
-            } catch (error) {
-                isLoading = false;
-                statusIndicator.style.display = 'none';
+            if (!Array.isArray(deals)) {
                 if (!isAppending) {
                     container.innerHTML = `
                         <div class="loading" style="line-height: 1.8;">
@@ -517,7 +512,28 @@
                             <button onclick="resetAndFetch()" style="background: #00ffcc; color: #000; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px;">Tentar Novamente</button>
                         </div>`;
                 }
+                return;
             }
+
+            if (!isAppending) container.innerHTML = '';
+
+            if (deals.length === 0) {
+                hasMoreData = false;
+                if (!isAppending) {
+                    container.innerHTML = `
+                        <div class="loading" style="line-height: 1.6;">
+                            🔍 Nenhuma promoção encontrada com esses filtros.<br>
+                            <span style="font-size: 14px; color: #888;">Tente limpar a busca ou alterar a faixa de preço.</span>
+                        </div>`;
+                }
+                return;
+            }
+
+            if (deals.length < 20) hasMoreData = false;
+
+            deals.forEach(d => globalDealsMap.set(d.dealID, d));
+            renderDealCards(deals, container);
+            currentPage++;
         }
 
         function renderDealCards(dealsArray, container) {
