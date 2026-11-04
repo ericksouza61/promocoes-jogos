@@ -443,6 +443,7 @@
             resetAndFetch();
         }
 
+        // Abordagem blindada com múltiplos proxies de fallback automáticos para contornar bloqueios de CORS da Vercel
         async function fetchDeals(isAppending = false) {
             if (isLoading || !hasMoreData || showingFavoritesOnly) return;
             isLoading = true;
@@ -483,55 +484,72 @@
             const minPriceUSD = (minPriceBRL / usdRate).toFixed(2);
             const maxPriceUSD = (maxPriceBRL / usdRate).toFixed(2);
 
-            let url = `https://www.cheapshark.com/api/1.0/deals?onSale=1&lowerPrice=${minPriceUSD}&upperPrice=${maxPriceUSD}&sortBy=${sortByParam}&desc=${descParam}&pageNumber=${currentPage}&pageSize=20`;
+            let targetUrl = `https://www.cheapshark.com/api/1.0/deals?onSale=1&lowerPrice=${minPriceUSD}&upperPrice=${maxPriceUSD}&sortBy=${sortByParam}&desc=${descParam}&pageNumber=${currentPage}&pageSize=20`;
             
             if (storeID !== "") {
-                url += `&storeID=${storeID}`;
+                targetUrl += `&storeID=${storeID}`;
             }
 
             if (title !== '') {
-                url += `&title=${encodeURIComponent(title)}`;
+                targetUrl += `&title=${encodeURIComponent(title)}`;
             }
 
-            try {
-                // Requisição direta sem proxy intermediário, utilizando o domínio oficial
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Erro na API');
-                const deals = await response.json();
-                
-                if (!isAppending) {
-                    container.innerHTML = '';
-                }
+            // Lista de rotas de proxy seguras para garantir estabilidade absoluta no navegador
+            const proxies = [
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+                `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+                targetUrl // fallback direto caso o ambiente permita
+            ];
 
-                if (!Array.isArray(deals) || deals.length === 0) {
-                    hasMoreData = false;
-                    if (!isAppending) {
-                        container.innerHTML = `
-                            <div class="loading" style="line-height: 1.6;">
-                                🔍 Nenhuma promoção encontrada com esses filtros.<br>
-                                <span style="font-size: 14px; color: #888;">Tente limpar o nome da busca, alterar a faixa de preço ou escolher "Todas as Lojas".</span>
-                            </div>`;
+            let deals = null;
+
+            for (let proxyUrl of proxies) {
+                try {
+                    const response = await fetch(proxyUrl);
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Se o allorigins retornar encapsulado, trata aqui
+                        deals = Array.isArray(data) ? data : (data.contents ? JSON.parse(data.contents) : data);
+                        if (Array.isArray(deals)) break;
                     }
-                    statusIndicator.style.display = 'none';
-                    isLoading = false;
-                    return;
+                } catch (e) {
+                    continue; // tenta o próximo proxy da lista
                 }
+            }
 
-                if (deals.length < 20) {
-                    hasMoreData = false;
-                }
+            isLoading = false;
+            statusIndicator.style.display = 'none';
 
-                deals.forEach(d => globalDealsMap.set(d.dealID, d));
-                renderDealCards(deals, container);
-                currentPage++;
-            } catch (error) {
+            if (!Array.isArray(deals)) {
                 if (!isAppending) {
                     container.innerHTML = '<div class="loading">Erro ao carregar as promoções. Tente novamente.</div>';
                 }
-            } finally {
-                isLoading = false;
-                statusIndicator.style.display = 'none';
+                return;
             }
+
+            if (!isAppending) {
+                container.innerHTML = '';
+            }
+
+            if (deals.length === 0) {
+                hasMoreData = false;
+                if (!isAppending) {
+                    container.innerHTML = `
+                        <div class="loading" style="line-height: 1.6;">
+                            🔍 Nenhuma promoção encontrada com esses filtros.<br>
+                            <span style="font-size: 14px; color: #888;">Tente limpar o nome da busca, alterar a faixa de preço ou escolher "Todas as Lojas".</span>
+                        </div>`;
+                }
+                return;
+            }
+
+            if (deals.length < 20) {
+                hasMoreData = false;
+            }
+
+            deals.forEach(d => globalDealsMap.set(d.dealID, d));
+            renderDealCards(deals, container);
+            currentPage++;
         }
 
         function renderDealCards(dealsArray, container) {
