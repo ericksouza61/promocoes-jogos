@@ -264,7 +264,7 @@
 
         <div class="actions">
             <button class="btn-search" onclick="resetAndFetch()">Filtrar</button>
-            <button class="btn-hot" onclick="filterHotDesals()" title="Mostrar apenas super promoções">🔥 Em Alta</button>
+            <button class="btn-hot" onclick="filterHotDeals()" title="Mostrar apenas super promoções">🔥 Em Alta</button>
             <button class="btn-fav-filter" id="favFilterBtn" onclick="showOnlyFavorites()" title="Ver jogos favoritados">❤️ Favoritos (0)</button>
         </div>
     </div>
@@ -443,7 +443,6 @@
             resetAndFetch();
         }
 
-        // Sistema de busca resiliente com múltiplos proxies e botão de recarga manual em caso de falha
         async function fetchDeals(isAppending = false) {
             if (isLoading || !hasMoreData || showingFavoritesOnly) return;
             isLoading = true;
@@ -467,92 +466,58 @@
             let sortByParam = 'Savings';
             let descParam = 1;
 
-            if (sortOption === 'SavingsDesc') {
-                sortByParam = 'Savings';
-                descParam = 1;
-            } else if (sortOption === 'PriceAsc') {
-                sortByParam = 'Price';
-                descParam = 0;
-            } else if (sortOption === 'PriceDesc') {
-                sortByParam = 'Price';
-                descParam = 1;
-            } else if (sortOption === 'Title') {
-                sortByParam = 'Title';
-                descParam = 0;
-            }
+            if (sortOption === 'SavingsDesc') { sortByParam = 'Savings'; descParam = 1; }
+            else if (sortOption === 'PriceAsc') { sortByParam = 'Price'; descParam = 0; }
+            else if (sortOption === 'PriceDesc') { sortByParam = 'Price'; descParam = 1; }
+            else if (sortOption === 'Title') { sortByParam = 'Title'; descParam = 0; }
 
             const minPriceUSD = (minPriceBRL / usdRate).toFixed(2);
             const maxPriceUSD = (maxPriceBRL / usdRate).toFixed(2);
 
-            let targetUrl = `https://www.cheapshark.com/api/1.0/deals?onSale=1&lowerPrice=${minPriceUSD}&upperPrice=${maxPriceUSD}&sortBy=${sortByParam}&desc=${descParam}&pageNumber=${currentPage}&pageSize=20`;
+            // Comunicação limpa e direta com a Serverless Function interna da Vercel (/api/deals)
+            let url = `/api/deals?onSale=1&lowerPrice=${minPriceUSD}&upperPrice=${maxPriceUSD}&sortBy=${sortByParam}&desc=${descParam}&pageNumber=${currentPage}&pageSize=20`;
             
-            if (storeID !== "") {
-                targetUrl += `&storeID=${storeID}`;
-            }
+            if (storeID !== "") url += `&storeID=${storeID}`;
+            if (title !== '') url += `&title=${encodeURIComponent(title)}`;
 
-            if (title !== '') {
-                targetUrl += `&title=${encodeURIComponent(title)}`;
-            }
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Erro na requisição');
+                const deals = await response.json();
 
-            const proxies = [
-                `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-                targetUrl
-            ];
+                isLoading = false;
+                statusIndicator.style.display = 'none';
 
-            let deals = null;
+                if (!isAppending) container.innerHTML = '';
 
-            for (let proxyUrl of proxies) {
-                try {
-                    const response = await fetch(proxyUrl);
-                    if (response.ok) {
-                        const data = await response.json();
-                        deals = Array.isArray(data) ? data : (data.contents ? JSON.parse(data.contents) : data);
-                        if (Array.isArray(deals)) break;
+                if (!Array.isArray(deals) || deals.length === 0) {
+                    hasMoreData = false;
+                    if (!isAppending) {
+                        container.innerHTML = `
+                            <div class="loading" style="line-height: 1.6;">
+                                🔍 Nenhuma promoção encontrada com esses filtros.<br>
+                                <span style="font-size: 14px; color: #888;">Tente limpar a busca ou alterar a faixa de preço.</span>
+                            </div>`;
                     }
-                } catch (e) {
-                    continue;
+                    return;
                 }
-            }
 
-            isLoading = false;
-            statusIndicator.style.display = 'none';
+                if (deals.length < 20) hasMoreData = false;
 
-            if (!Array.isArray(deals)) {
+                deals.forEach(d => globalDealsMap.set(d.dealID, d));
+                renderDealCards(deals, container);
+                currentPage++;
+            } catch (error) {
+                isLoading = false;
+                statusIndicator.style.display = 'none';
                 if (!isAppending) {
                     container.innerHTML = `
                         <div class="loading" style="line-height: 1.8;">
                             ⚠️ Não foi possível carregar as promoções no momento.<br>
-                            <span style="font-size: 14px; color: #888;">Isso pode ocorrer devido a instabilidades temporárias na API de ofertas.</span><br><br>
-                            <button onclick="resetAndFetch()" style="background: #00ffcc; color: #000; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">Tentar Novamente</button>
+                            <button onclick="resetAndFetch()" style="background: #00ffcc; color: #000; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px;">Tentar Novamente</button>
                         </div>`;
                 }
-                return;
             }
-
-            if (!isAppending) {
-                container.innerHTML = '';
-            }
-
-            if (deals.length === 0) {
-                hasMoreData = false;
-                if (!isAppending) {
-                    container.innerHTML = `
-                        <div class="loading" style="line-height: 1.6;">
-                            🔍 Nenhuma promoção encontrada com esses filtros.<br>
-                            <span style="font-size: 14px; color: #888;">Tente limpar o nome da busca, alterar a faixa de preço ou escolher "Todas as Lojas".</span>
-                        </div>`;
-                }
-                return;
-            }
-
-            if (deals.length < 20) {
-                hasMoreData = false;
-            }
-
-            deals.forEach(d => globalDealsMap.set(d.dealID, d));
-            renderDealCards(deals, container);
-            currentPage++;
         }
 
         function renderDealCards(dealsArray, container) {
