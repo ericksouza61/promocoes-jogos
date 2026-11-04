@@ -123,17 +123,6 @@
         
         .store-tag { font-size: 12px; color: #888; font-style: italic; }
 
-        .historical-lowest {
-            font-size: 11px;
-            color: #ffcc00;
-            background: rgba(255, 204, 0, 0.08);
-            padding: 3px 6px;
-            border-radius: 4px;
-            border: 1px solid rgba(255, 204, 0, 0.2);
-            margin-top: 4px;
-            display: inline-block;
-        }
-
         .card-bottom { margin-top: 15px; display: flex; flex-direction: column; gap: 8px; }
         .price-container { display: flex; flex-direction: column; gap: 2px; }
         .normal-price { text-decoration: line-through; color: #777; font-size: 13px; }
@@ -221,7 +210,7 @@
     <h1>🔥 Promoções de Jogos</h1>
 
     <div class="seo-intro">
-        <p>Encontre as melhores <strong>promoções de jogos para PC</strong> em tempo real nas principais lojas digitais, como Steam, Epic Games Store, GOG e Fanatical. Compare preços em Reais (R$), consulte o <strong>menor preço histórico</strong> e descubra descontos imperdíveis atualizados instantaneamente.</p>
+        <p>Encontre as melhores <strong>promoções de jogos para PC</strong> em tempo real nas principais lojas digitais, como Steam, Epic Games Store, GOG e Fanatical. Compare preços em Reais (R$) e descubra descontos imperdíveis atualizados instantaneamente.</p>
     </div>
 
     <div class="quick-stores">
@@ -317,7 +306,6 @@
         let hasMoreData = true;
         let showingFavoritesOnly = false;
         let globalDealsMap = new Map();
-        let historyCache = new Map();
         let scrollTimeout = null;
 
         const storeNames = {
@@ -545,35 +533,6 @@
             }
         }
 
-        async function loadLowestPrice(gameID, titleQuery, elementId) {
-            const el = document.getElementById(elementId);
-            if (!el) return;
-
-            if (historyCache.has(gameID)) {
-                el.innerHTML = historyCache.get(gameID);
-                return;
-            }
-
-            try {
-                const res = await fetch(`https://www.cheapshark.com/api/1.0/games?title=${encodeURIComponent(titleQuery)}&limit=1`);
-                if (!res.ok) {
-                    el.style.display = 'none';
-                    return;
-                }
-                const data = await res.json();
-                if (data && data.length > 0 && data[0].cheapest) {
-                    const lowestBRL = (parseFloat(data[0].cheapest) * usdRate).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                    const htmlContent = `📉 Menor histórico: <strong>${lowestBRL}</strong>`;
-                    historyCache.set(gameID, htmlContent);
-                    el.innerHTML = htmlContent;
-                } else {
-                    el.style.display = 'none';
-                }
-            } catch (e) {
-                el.style.display = 'none';
-            }
-        }
-
         function renderDealCards(dealsArray, container) {
             const favs = getFavorites();
 
@@ -597,7 +556,6 @@
                         </div>
                         <div class="title" title="${deal.title}">${deal.title}</div>
                         <div class="store-tag">🎮 Loja: ${storeName}</div>
-                        <div class="historical-lowest" id="history-${deal.dealID}-${deal.gameID}">Carregando histórico...</div>
                     </div>
                     <div class="card-bottom">
                         <div class="price-container">
@@ -611,19 +569,16 @@
                     </div>
                 `;
                 container.appendChild(card);
-
-                loadLowestPrice(deal.gameID, deal.title, `history-${deal.dealID}-${deal.gameID}`);
             });
         }
 
-        // Rolagem infinita com Debounce e controle rigoroso para eliminar o tremor
         window.addEventListener('scroll', () => {
             if (showingFavoritesOnly || !hasMoreData || isLoading) return;
 
             clearTimeout(scrollTimeout);
             scrollTimeout = setTimeout(() => {
                 const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-                if (scrollTop + clientHeight >= scrollHeight - 600) {
+                if (scrollTop + clientHeight >= scrollHeight - 500) {
                     fetchDeals(true);
                 }
             }, 100);
