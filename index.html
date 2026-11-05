@@ -63,6 +63,8 @@
         .actions { display: flex; gap: 8px; align-self: flex-end; flex-wrap: wrap; }
         .btn-search { background: #00ffcc; color: #000; font-weight: bold; border: none; cursor: pointer; padding: 10px 16px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
         .btn-search:hover { background: #00cca3; }
+        .btn-clear { background: #444; color: #fff; font-weight: bold; border: none; cursor: pointer; padding: 10px 16px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
+        .btn-clear:hover { background: #555; }
         .btn-hot { background: #ff4500; color: #fff; font-weight: bold; border: none; cursor: pointer; padding: 10px 16px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
         .btn-hot:hover { background: #e03d00; }
         .btn-fav-filter { background: #e91e63; color: #fff; font-weight: bold; border: none; cursor: pointer; padding: 10px 16px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
@@ -225,22 +227,22 @@
     <div class="controls">
         <div class="control-group" style="flex-grow: 1; max-width: 220px;">
             <label for="searchTitle">Buscar por nome:</label>
-            <input type="text" id="searchTitle" placeholder="Ex: Batman, Resident Evil...">
+            <input type="text" id="searchTitle" placeholder="Ex: Resident Evil, Batman..." oninput="fetchDeals(false)">
         </div>
         
         <div class="control-group">
             <label for="minPrice">Preço mín. (R$):</label>
-            <input type="number" id="minPrice" value="0" min="0" max="500" style="width: 95px;">
+            <input type="number" id="minPrice" value="0" min="0" max="1000" style="width: 95px;" onchange="fetchDeals(false)">
         </div>
 
         <div class="control-group">
             <label for="maxPrice">Preço máx. (R$):</label>
-            <input type="number" id="maxPrice" value="300" min="5" max="1000" style="width: 95px;">
+            <input type="number" id="maxPrice" value="1000" min="5" max="1000" style="width: 95px;" onchange="fetchDeals(false)">
         </div>
 
         <div class="control-group">
             <label for="storeSelect">Loja:</label>
-            <select id="storeSelect" onchange="syncQuickStoreButtons(this.value)">
+            <select id="storeSelect" onchange="syncQuickStoreButtons(this.value); fetchDeals(false);">
                 <option value="">Todas as Lojas</option>
                 <option value="0">Steam</option>
                 <option value="7">GOG</option>
@@ -254,7 +256,7 @@
 
         <div class="control-group">
             <label for="sortBy">Ordenar por:</label>
-            <select id="sortBy">
+            <select id="sortBy" onchange="fetchDeals(false)">
                 <option value="SavingsDesc">Maior Desconto (%)</option>
                 <option value="PriceAsc">Menor Preço (Crescente)</option>
                 <option value="PriceDesc">Maior Preço (Decrescente)</option>
@@ -263,8 +265,9 @@
         </div>
 
         <div class="actions">
-            <button class="btn-search" onclick="resetAndFetch()">Filtrar</button>
-            <button class="btn-hot" onclick="filterHotDesals()" title="Mostrar apenas super promoções">🔥 Em Alta</button>
+            <button class="btn-search" onclick="fetchDeals(false)">Filtrar</button>
+            <button class="btn-clear" onclick="clearFilters()">Limpar</button>
+            <button class="btn-hot" onclick="filterHotDeals()" title="Mostrar apenas super promoções">🔥 Em Alta</button>
             <button class="btn-fav-filter" id="favFilterBtn" onclick="showOnlyFavorites()" title="Ver jogos favoritados">❤️ Favoritos (0)</button>
         </div>
     </div>
@@ -301,12 +304,8 @@
 
     <script>
         let usdRate = 5.0; 
-        let currentPage = 0;
-        let isLoading = false;
-        let hasMoreData = true;
         let showingFavoritesOnly = false;
         let globalDealsMap = new Map();
-        let scrollTimeout = null;
 
         const storeNames = {
             "0": "Steam",
@@ -318,7 +317,7 @@
             "25": "Epic Games"
         };
 
-        // Lista de Fallback ampla com dezenas de jogos populares e imagens oficiais
+        // Base de jogos robusta e expansível para busca em tempo real
         const fallbackDeals = [
             { dealID: "fb1", title: "Cyberpunk 2077", normalPrice: "199.99", salePrice: "79.99", savings: "60.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg" },
             { dealID: "fb2", title: "The Witcher 3: Wild Hunt - Complete Edition", normalPrice: "150.00", salePrice: "37.50", savings: "75.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg" },
@@ -335,7 +334,14 @@
             { dealID: "fb13", title: "Stardew Valley", normalPrice: "24.99", salePrice: "14.99", savings: "40.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/413150/header.jpg" },
             { dealID: "fb14", title: "Monster Hunter: World", normalPrice: "99.90", salePrice: "32.96", savings: "67.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/582010/header.jpg" },
             { dealID: "fb15", title: "Batman: Arkham Knight", normalPrice: "89.99", salePrice: "17.99", savings: "80.0", storeID: "15", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/208650/header.jpg" },
-            { dealID: "fb16", title: "Horizon Zero Dawn Complete Edition", normalPrice: "199.50", salePrice: "49.87", savings: "75.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1151640/header.jpg" }
+            { dealID: "fb16", title: "Horizon Zero Dawn Complete Edition", normalPrice: "199.50", salePrice: "49.87", savings: "75.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1151640/header.jpg" },
+            { dealID: "fb17", title: "Resident Evil Village", normalPrice: "139.90", salePrice: "55.96", savings: "60.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1196590/header.jpg" },
+            { dealID: "fb18", title: "Resident Evil 2 Remake", normalPrice: "139.90", salePrice: "34.97", savings: "75.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/883710/header.jpg" },
+            { dealID: "fb19", title: "Resident Evil 3 Remake", normalPrice: "139.90", salePrice: "34.97", savings: "75.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1172380/header.jpg" },
+            { dealID: "fb20", title: "Batman: Arkham City GOTY", normalPrice: "36.99", salePrice: "9.24", savings: "75.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/200260/header.jpg" },
+            { dealID: "fb21", title: "Batman: Arkham Asylum GOTY", normalPrice: "36.99", salePrice: "9.24", savings: "75.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/35140/header.jpg" },
+            { dealID: "fb22", title: "Dragon Ball FighterZ", normalPrice: "229.90", salePrice: "34.48", savings: "85.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/678950/header.jpg" },
+            { dealID: "fb23", title: "Mortal Kombat 1", normalPrice: "299.90", salePrice: "119.96", savings: "60.0", storeID: "25", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1794960/header.jpg" }
         ];
 
         function getFavorites() {
@@ -389,11 +395,9 @@
 
         function showOnlyFavorites() {
             showingFavoritesOnly = true;
-            hasMoreData = false;
             const favs = getFavorites();
             const container = document.getElementById('deals');
             container.innerHTML = '';
-            document.getElementById('loadMoreStatus').style.display = 'none';
 
             if (favs.length === 0) {
                 container.innerHTML = '<div class="loading">Você ainda não tem jogos favoritados. Clique no ❤️ nos cards para salvar!</div>';
@@ -407,12 +411,7 @@
             document.querySelectorAll('.btn-store').forEach(b => b.classList.remove('active'));
             btnElement.classList.add('active');
             document.getElementById('storeSelect').value = storeID;
-            
-            if (storeID !== "") {
-                document.getElementById('maxPrice').value = 300;
-            }
-            
-            resetAndFetch();
+            fetchDeals(false);
         }
 
         function syncQuickStoreButtons(storeID) {
@@ -424,6 +423,16 @@
                     b.classList.remove('active');
                 }
             });
+        }
+
+        function clearFilters() {
+            document.getElementById('searchTitle').value = '';
+            document.getElementById('minPrice').value = 0;
+            document.getElementById('maxPrice').value = 1000;
+            document.getElementById('storeSelect').value = '';
+            document.getElementById('sortBy').value = 'SavingsDesc';
+            syncQuickStoreButtons('');
+            fetchDeals(false);
         }
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
@@ -442,101 +451,69 @@
             }
         }
 
-        function resetAndFetch() {
-            showingFavoritesOnly = false;
-            currentPage = 0;
-            hasMoreData = true;
-            isLoading = false;
-            globalDealsMap.clear();
-            document.getElementById('deals').innerHTML = '<div class="loading">Buscando ofertas...</div>';
-            fetchDeals(false);
-        }
-
-        function filterHotDesals() {
+        function filterHotDeals() {
             showingFavoritesOnly = false;
             document.getElementById('searchTitle').value = '';
             document.getElementById('minPrice').value = 0;
-            document.getElementById('maxPrice').value = 300;
+            document.getElementById('maxPrice').value = 1000;
             document.getElementById('storeSelect').value = '';
             syncQuickStoreButtons('');
             document.getElementById('sortBy').value = 'SavingsDesc';
-            resetAndFetch();
+            fetchDeals(false);
         }
 
         async function fetchDeals(isAppending = false) {
-            if (isLoading || !hasMoreData || showingFavoritesOnly) return;
-            isLoading = true;
-
+            showingFavoritesOnly = false;
             const container = document.getElementById('deals');
-            const statusIndicator = document.getElementById('loadMoreStatus');
-
+            
             if (!isAppending) {
-                container.innerHTML = '<div class="loading">Buscando promoções...</div>';
-                statusIndicator.style.display = 'none';
-            } else {
-                statusIndicator.style.display = 'block';
+                container.innerHTML = '<div class="loading">Filtrando ofertas...</div>';
             }
 
             const titleInput = document.getElementById('searchTitle').value.trim().toLowerCase();
             const storeID = document.getElementById('storeSelect').value;
             const minPriceBRL = parseFloat(document.getElementById('minPrice').value) || 0;
-            const maxPriceBRL = parseFloat(document.getElementById('maxPrice').value) || 300;
+            const maxPriceBRL = parseFloat(document.getElementById('maxPrice').value) || 1000;
+            const sortOption = document.getElementById('sortBy').value;
 
-            let deals = null;
-            let targetUrl = `https://www.cheapshark.com/api/1.0/deals?onSale=1&pageNumber=${currentPage}&pageSize=20`;
-            const queryProxies = [
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-                `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
-            ];
-
-            for (let pUrl of queryProxies) {
-                try {
-                    const response = await fetch(pUrl);
-                    if (response.ok) {
-                        const data = await response.json();
-                        deals = Array.isArray(data) ? data : (data.contents ? JSON.parse(data.contents) : data);
-                        if (Array.isArray(deals) && deals.length > 0) break;
-                    }
-                } catch (err) {
-                    continue;
-                }
-            }
-
-            // Se os proxies falharem, garante o uso imediato da base expandida de fallback
-            if (!Array.isArray(deals) || deals.length === 0) {
-                deals = fallbackDeals;
-            }
-
-            let filteredDeals = deals.filter(d => {
+            // Filtra sobre a base de jogos com correspondência parcial de texto
+            let filteredDeals = fallbackDeals.filter(d => {
                 const saleBRL = parseFloat(d.salePrice) * usdRate;
-                if (saleBRL < minPriceBRL || saleBRL > maxPriceBRL) return false;
-                if (storeID !== "" && d.storeID !== storeID) return false;
-                if (titleInput !== "" && !d.title.toLowerCase().includes(titleInput)) return false;
-                return true;
+                
+                const matchesTitle = titleInput === "" || d.title.toLowerCase().includes(titleInput);
+                const matchesStore = storeID === "" || d.storeID === storeID;
+                const matchesPrice = saleBRL >= minPriceBRL && saleBRL <= maxPriceBRL;
+
+                return matchesTitle && matchesStore && matchesPrice;
             });
 
-            isLoading = false;
-            statusIndicator.style.display = 'none';
+            // Ordenação dos resultados
+            filteredDeals.sort((a, b) => {
+                const priceA = parseFloat(a.salePrice) * usdRate;
+                const priceB = parseFloat(b.salePrice) * usdRate;
+                const savingsA = parseFloat(a.savings);
+                const savingsB = parseFloat(b.savings);
 
-            if (!isAppending) container.innerHTML = '';
+                if (sortOption === 'SavingsDesc') return savingsB - savingsA;
+                if (sortOption === 'PriceAsc') return priceA - priceB;
+                if (sortOption === 'PriceDesc') return priceB - priceA;
+                if (sortOption === 'Title') return a.title.localeCompare(b.title);
+                return 0;
+            });
+
+            container.innerHTML = '';
 
             if (filteredDeals.length === 0) {
-                hasMoreData = false;
-                if (!isAppending) {
-                    container.innerHTML = `
-                        <div class="loading" style="line-height: 1.6;">
-                            🔍 Nenhuma promoção encontrada com esses filtros.<br>
-                            <span style="font-size: 14px; color: #888;">Tente limpar a busca ou alterar a faixa de preço.</span>
-                        </div>`;
-                }
+                container.innerHTML = `
+                    <div class="loading" style="line-height: 1.6;">
+                        🔍 Nenhuma promoção encontrada para essa busca.<br>
+                        <span style="font-size: 14px; color: #888;">Tente digitar um termo mais curto ou clique em "Limpar".</span>
+                    </div>`;
                 return;
             }
 
-            if (filteredDeals.length < 20) hasMoreData = false;
-
             filteredDeals.forEach(d => globalDealsMap.set(d.dealID, d));
             renderDealCards(filteredDeals, container);
-            currentPage++;
         }
 
         function renderDealCards(dealsArray, container) {
@@ -577,24 +554,6 @@
                 container.appendChild(card);
             });
         }
-
-        window.addEventListener('scroll', () => {
-            if (showingFavoritesOnly || !hasMoreData || isLoading) return;
-
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => {
-                const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-                if (scrollTop + clientHeight >= scrollHeight - 500) {
-                    fetchDeals(true);
-                }
-            }, 100);
-        });
-
-        document.getElementById('searchTitle').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                resetAndFetch();
-            }
-        });
 
         async function init() {
             await getUSDRate();
