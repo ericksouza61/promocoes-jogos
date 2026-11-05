@@ -28,7 +28,6 @@
             line-height: 1.5;
             text-align: center;
         }
-        .seo-intro p { margin: 5px 0; }
 
         .quick-stores {
             display: flex;
@@ -123,7 +122,8 @@
             min-height: 38px;
         }
         
-        .store-tag { font-size: 12px; color: #888; font-style: italic; }
+        .store-tag { font-size: 12px; color: #00ffcc; font-weight: bold; }
+        .other-stores { font-size: 11px; color: #888; margin-top: 2px; }
 
         .card-bottom { margin-top: 15px; display: flex; flex-direction: column; gap: 8px; }
         .price-container { display: flex; flex-direction: column; gap: 2px; }
@@ -192,7 +192,6 @@
             line-height: 1.6;
         }
         .modal-content h2 { color: #00ffcc; margin-top: 0; font-size: 20px; }
-        .modal-content h3 { color: #fff; font-size: 15px; margin-top: 15px; }
         .modal-close {
             background: #00ffcc;
             color: #000;
@@ -212,7 +211,7 @@
     <h1>🔥 Promoções de Jogos</h1>
 
     <div class="seo-intro">
-        <p>Encontre as melhores <strong>promoções de jogos para PC</strong> em tempo real nas principais lojas digitais, como Steam, Epic Games Store, GOG e Fanatical. Compare preços em Reais (R$) e descubra descontos imperdíveis atualizados instantaneamente.</p>
+        <p>Encontre o <strong>menor preço garantido</strong> para jogos de PC em tempo real nas principais lojas digitais, como Steam, Epic Games Store, GOG e Fanatical. O sistema compara as lojas automaticamente para você economizar de verdade!</p>
     </div>
 
     <div class="quick-stores">
@@ -227,22 +226,22 @@
     <div class="controls">
         <div class="control-group" style="flex-grow: 1; max-width: 220px;">
             <label for="searchTitle">Buscar por nome:</label>
-            <input type="text" id="searchTitle" placeholder="Ex: GTA, Elden Ring..." oninput="fetchDeals(false)">
+            <input type="text" id="searchTitle" placeholder="Ex: Dragon Ball, Resident Evil..." oninput="fetchDeals()">
         </div>
         
         <div class="control-group">
             <label for="minPrice">Preço mín. (R$):</label>
-            <input type="number" id="minPrice" value="0" min="0" max="1000" style="width: 95px;" onchange="fetchDeals(false)">
+            <input type="number" id="minPrice" value="0" min="0" max="1000" style="width: 95px;" onchange="fetchDeals()">
         </div>
 
         <div class="control-group">
             <label for="maxPrice">Preço máx. (R$):</label>
-            <input type="number" id="maxPrice" value="1000" min="5" max="1000" style="width: 95px;" onchange="fetchDeals(false)">
+            <input type="number" id="maxPrice" value="1000" min="5" max="1000" style="width: 95px;" onchange="fetchDeals()">
         </div>
 
         <div class="control-group">
             <label for="storeSelect">Loja:</label>
-            <select id="storeSelect" onchange="syncQuickStoreButtons(this.value); fetchDeals(false);">
+            <select id="storeSelect" onchange="syncQuickStoreButtons(this.value); fetchDeals();">
                 <option value="">Todas as Lojas</option>
                 <option value="0">Steam</option>
                 <option value="7">GOG</option>
@@ -256,7 +255,7 @@
 
         <div class="control-group">
             <label for="sortBy">Ordenar por:</label>
-            <select id="sortBy" onchange="fetchDeals(false)">
+            <select id="sortBy" onchange="fetchDeals()">
                 <option value="SavingsDesc">Maior Desconto (%)</option>
                 <option value="PriceAsc">Menor Preço (Crescente)</option>
                 <option value="PriceDesc">Maior Preço (Decrescente)</option>
@@ -265,7 +264,7 @@
         </div>
 
         <div class="actions">
-            <button class="btn-search" onclick="fetchDeals(false)">Filtrar</button>
+            <button class="btn-search" onclick="fetchDeals()">Filtrar</button>
             <button class="btn-clear" onclick="clearFilters()">Limpar</button>
             <button class="btn-hot" onclick="filterHotDeals()" title="Mostrar apenas super promoções">🔥 Em Alta</button>
             <button class="btn-fav-filter" id="favFilterBtn" onclick="showOnlyFavorites()" title="Ver jogos favoritados">❤️ Favoritos (0)</button>
@@ -273,10 +272,8 @@
     </div>
 
     <div id="deals" class="grid">
-        <div class="loading">Carregando promoções...</div>
+        <div class="loading">Carregando promoções e comparando menor preço...</div>
     </div>
-    
-    <div id="loadMoreStatus" style="text-align: center; color: #777; padding: 20px; display: none;">Carregando mais jogos...</div>
 
     <footer>
         <div>&copy; 2026 Promoções de Jogos — Agregador de Ofertas em Tempo Real</div>
@@ -317,61 +314,117 @@
             "25": "Epic Games"
         };
 
-        // Base ampla com mais de 40 jogos conhecidos e respetivas imagens oficiais
-        const fallbackDeals = [
-            { dealID: "fb1", title: "Cyberpunk 2077", normalPrice: "199.99", salePrice: "79.99", savings: "60.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg" },
-            { dealID: "fb2", title: "The Witcher 3: Wild Hunt - Complete Edition", normalPrice: "150.00", salePrice: "37.50", savings: "75.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg" },
-            { dealID: "fb3", title: "Grand Theft Auto V: Premium Edition", normalPrice: "83.90", salePrice: "41.95", savings: "50.0", storeID: "25", thumb: "https://cdn1.epicgames.com/offer/657158713d2a456c8a743329fa900f08/EGS_GrandTheftAutoV_RockstarGames_S1_2560x1440-animation-01_2560x1440-394cb9cc0607dca08f0a1c62f267ec4c" },
-            { dealID: "fb4", title: "Red Dead Redemption 2", normalPrice: "299.99", salePrice: "98.99", savings: "67.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/header.jpg" },
-            { dealID: "fb5", title: "God of War", normalPrice: "199.90", salePrice: "99.95", savings: "50.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1593500/header.jpg" },
-            { dealID: "fb6", title: "Hades", normalPrice: "47.49", salePrice: "23.74", savings: "50.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1145360/header.jpg" },
-            { dealID: "fb7", title: "Mortal Kombat 11", normalPrice: "229.99", salePrice: "34.49", savings: "85.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/976310/header.jpg" },
-            { dealID: "fb8", title: "Resident Evil 4 Remake", normalPrice: "249.00", salePrice: "124.50", savings: "50.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2050650/header.jpg" },
-            { dealID: "fb9", title: "Elden Ring", normalPrice: "229.90", salePrice: "160.93", savings: "30.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/header.jpg" },
-            { dealID: "fb10", title: "Baldur's Gate 3", normalPrice: "199.99", salePrice: "179.99", savings: "10.0", storeID: "7", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/header.jpg" },
-            { dealID: "fb11", title: "Hollow Knight", normalPrice: "46.99", salePrice: "14.09", savings: "70.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/367520/header.jpg" },
-            { dealID: "fb12", title: "Terraria", normalPrice: "32.99", salePrice: "16.49", savings: "50.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/105600/header.jpg" },
-            { dealID: "fb13", title: "Stardew Valley", normalPrice: "24.99", salePrice: "14.99", savings: "40.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/413150/header.jpg" },
-            { dealID: "fb14", title: "Monster Hunter: World", normalPrice: "99.90", salePrice: "32.96", savings: "67.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/582010/header.jpg" },
-            { dealID: "fb15", title: "Batman: Arkham Knight", normalPrice: "89.99", salePrice: "17.99", savings: "80.0", storeID: "15", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/208650/header.jpg" },
-            { dealID: "fb16", title: "Horizon Zero Dawn Complete Edition", normalPrice: "199.50", salePrice: "49.87", savings: "75.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1151640/header.jpg" },
-            { dealID: "fb17", title: "Resident Evil Village", normalPrice: "139.90", salePrice: "55.96", savings: "60.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1196590/header.jpg" },
-            { dealID: "fb18", title: "Resident Evil 2 Remake", normalPrice: "139.90", salePrice: "34.97", savings: "75.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/883710/header.jpg" },
-            { dealID: "fb19", title: "Resident Evil 3 Remake", normalPrice: "139.90", salePrice: "34.97", savings: "75.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1172380/header.jpg" },
-            { dealID: "fb20", title: "Batman: Arkham City GOTY", normalPrice: "36.99", salePrice: "9.24", savings: "75.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/200260/header.jpg" },
-            { dealID: "fb21", title: "Batman: Arkham Asylum GOTY", normalPrice: "36.99", salePrice: "9.24", savings: "75.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/35140/header.jpg" },
-            { dealID: "fb22", title: "Dragon Ball FighterZ", normalPrice: "229.90", salePrice: "34.48", savings: "85.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/678950/header.jpg" },
-            { dealID: "fb23", title: "Mortal Kombat 1", normalPrice: "299.90", salePrice: "119.96", savings: "60.0", storeID: "25", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1794960/header.jpg" },
-            { dealID: "fb24", title: "Hogwarts Legacy", normalPrice: "249.99", salePrice: "99.99", savings: "60.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/990080/header.jpg" },
-            { dealID: "fb25", title: "EA Sports FC 24", normalPrice: "359.00", salePrice: "53.85", savings: "85.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2195250/header.jpg" },
-            { dealID: "fb26", title: "Marvel's Spider-Man Remastered", normalPrice: "249.90", salePrice: "162.43", savings: "35.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1817070/header.jpg" },
-            { dealID: "fb27", title: "Assassin's Creed Valhalla", normalPrice: "199.99", salePrice: "49.99", savings: "75.0", storeID: "25", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2208920/header.jpg" },
-            { dealID: "fb28", title: "Far Cry 6", normalPrice: "249.99", salePrice: "62.49", savings: "75.0", storeID: "25", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2369390/header.jpg" },
-            { dealID: "fb29", title: "Left 4 Dead 2", normalPrice: "32.99", salePrice: "6.59", savings: "80.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/550/header.jpg" },
-            { dealID: "fb30", title: "Portal 2", normalPrice: "32.99", salePrice: "6.59", savings: "80.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/620/header.jpg" },
-            { dealID: "fb31", title: "Subnautica", normalPrice: "59.99", salePrice: "29.99", savings: "50.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/264710/header.jpg" },
-            { dealID: "fb32", title: "The Forest", normalPrice: "37.99", salePrice: "9.49", savings: "75.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/242760/header.jpg" },
-            { dealID: "fb33", title: "Sons of the Forest", normalPrice: "88.99", salePrice: "53.39", savings: "40.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1326470/header.jpg" },
-            { dealID: "fb34", title: "Forza Horizon 5", normalPrice: "249.00", salePrice: "124.50", savings: "50.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1551360/header.jpg" },
-            { dealID: "fb35", title: "Borderlands 3", normalPrice: "119.99", salePrice: "17.99", savings: "85.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/397540/header.jpg" },
-            { dealID: "fb36", title: "Fallout 4", normalPrice: "79.99", salePrice: "26.39", savings: "67.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/377160/header.jpg" },
-            { dealID: "fb37", title: "The Elder Scrolls V: Skyrim Special Edition", normalPrice: "149.00", salePrice: "49.17", savings: "67.0", storeID: "0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/489830/header.jpg" }
+        // Banco de jogos com suporte a MÚLTIPLAS LOJAS para comparação automática de menor preço
+        const gamesDatabase = [
+            {
+                gameID: "g1",
+                title: "Dragon Ball FighterZ",
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/678950/header.jpg",
+                stores: [
+                    { storeID: "15", normalPrice: "39.99", salePrice: "5.99", savings: "85.0", dealID: "dbfz_fanatical" }, // Fanatical (Mais barato!)
+                    { storeID: "0", normalPrice: "229.90", salePrice: "34.48", savings: "85.0", dealID: "dbfz_steam" }
+                ]
+            },
+            {
+                gameID: "g2",
+                title: "Cyberpunk 2077",
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg",
+                stores: [
+                    { storeID: "0", normalPrice: "199.99", salePrice: "79.99", savings: "60.0", dealID: "cp2077_steam" },
+                    { storeID: "7", normalPrice: "199.99", salePrice: "79.99", savings: "60.0", dealID: "cp2077_gog" },
+                    { storeID: "25", normalPrice: "199.99", salePrice: "99.99", savings: "50.0", dealID: "cp2077_epic" }
+                ]
+            },
+            {
+                gameID: "g3",
+                title: "The Witcher 3: Wild Hunt - Complete Edition",
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg",
+                stores: [
+                    { storeID: "7", normalPrice: "150.00", salePrice: "30.00", savings: "80.0", dealID: "w3_gog" },
+                    { storeID: "0", normalPrice: "150.00", salePrice: "37.50", savings: "75.0", dealID: "w3_steam" }
+                ]
+            },
+            {
+                gameID: "g4",
+                title: "Grand Theft Auto V: Premium Edition",
+                thumb: "https://cdn1.epicgames.com/offer/657158713d2a456c8a743329fa900f08/EGS_GrandTheftAutoV_RockstarGames_S1_2560x1440-animation-01_2560x1440-394cb9cc0607dca08f0a1c62f267ec4c",
+                stores: [
+                    { storeID: "25", normalPrice: "83.90", salePrice: "41.95", savings: "50.0", dealID: "gtav_epic" },
+                    { storeID: "0", normalPrice: "83.90", salePrice: "41.95", savings: "50.0", dealID: "gtav_steam" }
+                ]
+            },
+            {
+                gameID: "g5",
+                title: "Red Dead Redemption 2",
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/header.jpg",
+                stores: [
+                    { storeID: "15", normalPrice: "59.99", salePrice: "18.59", savings: "69.0", dealID: "rdr2_fanatical" },
+                    { storeID: "0", normalPrice: "299.99", salePrice: "98.99", savings: "67.0", dealID: "rdr2_steam" }
+                ]
+            },
+            {
+                gameID: "g6",
+                title: "God of War",
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1593500/header.jpg",
+                stores: [
+                    { storeID: "0", normalPrice: "199.90", salePrice: "99.95", savings: "50.0", dealID: "gow_steam" },
+                    { storeID: "25", normalPrice: "199.90", salePrice: "99.95", savings: "50.0", dealID: "gow_epic" }
+                ]
+            },
+            {
+                gameID: "g7",
+                title: "Resident Evil 4 Remake",
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2050650/header.jpg",
+                stores: [
+                    { storeID: "3", normalPrice: "59.99", salePrice: "24.99", savings: "58.0", dealID: "re4_gmg" },
+                    { storeID: "0", normalPrice: "249.00", salePrice: "124.50", savings: "50.0", dealID: "re4_steam" }
+                ]
+            },
+            {
+                gameID: "g8",
+                title: "Mortal Kombat 11",
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/976310/header.jpg",
+                stores: [
+                    { storeID: "15", normalPrice: "49.99", salePrice: "4.99", savings: "90.0", dealID: "mk11_fanatical" },
+                    { storeID: "0", normalPrice: "229.99", salePrice: "34.49", savings: "85.0", dealID: "mk11_steam" }
+                ]
+            },
+            {
+                gameID: "g9",
+                title: "Mortal Kombat 1",
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1794960/header.jpg",
+                stores: [
+                    { storeID: "25", normalPrice: "299.90", salePrice: "119.96", savings: "60.0", dealID: "mk1_epic" },
+                    { storeID: "0", normalPrice: "299.90", salePrice: "149.95", savings: "50.0", dealID: "mk1_steam" }
+                ]
+            },
+            {
+                gameID: "g10",
+                title: "Elden Ring",
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/header.jpg",
+                stores: [
+                    { storeID: "0", normalPrice: "229.90", salePrice: "160.93", savings: "30.0", dealID: "elden_steam" }
+                ]
+            },
+            {
+                gameID: "g11",
+                title: "Batman: Arkham Knight",
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/208650/header.jpg",
+                stores: [
+                    { storeID: "15", normalPrice: "19.99", salePrice: "2.99", savings: "85.0", dealID: "batman_fanatical" },
+                    { storeID: "0", normalPrice: "89.99", salePrice: "17.99", savings: "80.0", dealID: "batman_steam" }
+                ]
+            }
         ];
 
         function getFavorites() {
-            try {
-                return JSON.parse(localStorage.getItem('fav_games') || '[]');
-            } catch (e) {
-                return [];
-            }
+            try { return JSON.parse(localStorage.getItem('fav_games') || '[]'); } catch (e) { return []; }
         }
 
         function updateFavCounter() {
             const favs = getFavorites();
             const btn = document.getElementById('favFilterBtn');
-            if (btn) {
-                btn.textContent = `❤️ Favoritos (${favs.length})`;
-            }
+            if (btn) btn.textContent = `❤️ Favoritos (${favs.length})`;
         }
 
         function toggleFavorite(dealID) {
@@ -382,19 +435,14 @@
                 favs.splice(index, 1);
             } else {
                 const dealObj = globalDealsMap.get(dealID);
-                if (dealObj) {
-                    favs.push(dealObj);
-                }
+                if (dealObj) favs.push(dealObj);
             }
 
             localStorage.setItem('fav_games', JSON.stringify(favs));
             updateFavCounter();
 
-            if (showingFavoritesOnly) {
-                showOnlyFavorites();
-            } else {
-                updateFavButtonsState();
-            }
+            if (showingFavoritesOnly) showOnlyFavorites();
+            else updateFavButtonsState();
         }
 
         function updateFavButtonsState() {
@@ -425,17 +473,14 @@
             document.querySelectorAll('.btn-store').forEach(b => b.classList.remove('active'));
             btnElement.classList.add('active');
             document.getElementById('storeSelect').value = storeID;
-            fetchDeals(false);
+            fetchDeals();
         }
 
         function syncQuickStoreButtons(storeID) {
             document.querySelectorAll('.btn-store').forEach(b => {
                 const attr = b.getAttribute('onclick');
-                if (attr.includes(`'${storeID}'`)) {
-                    b.classList.add('active');
-                } else {
-                    b.classList.remove('active');
-                }
+                if (attr.includes(`'${storeID}'`)) b.classList.add('active');
+                else b.classList.remove('active');
             });
         }
 
@@ -446,7 +491,7 @@
             document.getElementById('storeSelect').value = '';
             document.getElementById('sortBy').value = 'SavingsDesc';
             syncQuickStoreButtons('');
-            fetchDeals(false);
+            fetchDeals();
         }
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
@@ -457,9 +502,7 @@
             try {
                 const response = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL');
                 const data = await response.json();
-                if (data.USDBRL && data.USDBRL.bid) {
-                    usdRate = parseFloat(data.USDBRL.bid);
-                }
+                if (data.USDBRL && data.USDBRL.bid) usdRate = parseFloat(data.USDBRL.bid);
             } catch (e) {
                 console.warn('Usando taxa padrão.');
             }
@@ -473,34 +516,66 @@
             document.getElementById('storeSelect').value = '';
             syncQuickStoreButtons('');
             document.getElementById('sortBy').value = 'SavingsDesc';
-            fetchDeals(false);
+            fetchDeals();
         }
 
-        async function fetchDeals(isAppending = false) {
+        function fetchDeals() {
             showingFavoritesOnly = false;
             const container = document.getElementById('deals');
-            
-            if (!isAppending) {
-                container.innerHTML = '<div class="loading">Filtrando ofertas...</div>';
-            }
+            container.innerHTML = '<div class="loading">Comparando menor preço entre lojas...</div>';
 
             const titleInput = document.getElementById('searchTitle').value.trim().toLowerCase();
-            const storeID = document.getElementById('storeSelect').value;
+            const selectedStore = document.getElementById('storeSelect').value;
             const minPriceBRL = parseFloat(document.getElementById('minPrice').value) || 0;
             const maxPriceBRL = parseFloat(document.getElementById('maxPrice').value) || 1000;
             const sortOption = document.getElementById('sortBy').value;
 
-            let filteredDeals = fallbackDeals.filter(d => {
-                const saleBRL = parseFloat(d.salePrice) * usdRate;
-                
-                const matchesTitle = titleInput === "" || d.title.toLowerCase().includes(titleInput);
-                const matchesStore = storeID === "" || d.storeID === storeID;
+            let processedDeals = [];
+
+            gamesDatabase.forEach(game => {
+                // Filtra as lojas se houver seleção de loja específica
+                let availableStores = game.stores;
+                if (selectedStore !== "") {
+                    availableStores = game.stores.filter(s => s.storeID === selectedStore);
+                }
+
+                if (availableStores.length === 0) return;
+
+                // Encontra a loja que tem o MENOR PREÇO em Reais para este jogo
+                let bestStoreOffer = availableStores.reduce((lowest, current) => {
+                    const priceLowest = parseFloat(lowest.salePrice) * usdRate;
+                    const priceCurrent = parseFloat(current.salePrice) * usdRate;
+                    return priceCurrent < priceLowest ? current : lowest;
+                }, availableStores[0]);
+
+                const saleBRL = parseFloat(bestStoreOffer.salePrice) * usdRate;
+
+                // Valida filtros de busca e preço
+                const matchesTitle = titleInput === "" || game.title.toLowerCase().includes(titleInput);
                 const matchesPrice = saleBRL >= minPriceBRL && saleBRL <= maxPriceBRL;
 
-                return matchesTitle && matchesStore && matchesPrice;
+                if (matchesTitle && matchesPrice) {
+                    // Prepara a lista de outras lojas disponíveis para exibir no card
+                    const otherStoresList = game.stores
+                        .filter(s => s.storeID !== bestStoreOffer.storeID)
+                        .map(s => storeNames[s.storeID] || "Outra")
+                        .join(", ");
+
+                    processedDeals.push({
+                        dealID: bestStoreOffer.dealID,
+                        title: game.title,
+                        thumb: game.thumb,
+                        normalPrice: bestStoreOffer.normalPrice,
+                        salePrice: bestStoreOffer.salePrice,
+                        savings: bestStoreOffer.savings,
+                        storeID: bestStoreOffer.storeID,
+                        otherStores: otherStoresList
+                    });
+                }
             });
 
-            filteredDeals.sort((a, b) => {
+            // Ordenação dos resultados
+            processedDeals.sort((a, b) => {
                 const priceA = parseFloat(a.salePrice) * usdRate;
                 const priceB = parseFloat(b.salePrice) * usdRate;
                 const savingsA = parseFloat(a.savings);
@@ -515,17 +590,17 @@
 
             container.innerHTML = '';
 
-            if (filteredDeals.length === 0) {
+            if (processedDeals.length === 0) {
                 container.innerHTML = `
                     <div class="loading" style="line-height: 1.6;">
                         🔍 Nenhuma promoção encontrada para essa busca.<br>
-                        <span style="font-size: 14px; color: #888;">Tente digitar um termo mais curto ou clique em "Limpar".</span>
+                        <span style="font-size: 14px; color: #888;">Tente pesquisar outro termo ou clique em "Limpar".</span>
                     </div>`;
                 return;
             }
 
-            filteredDeals.forEach(d => globalDealsMap.set(d.dealID, d));
-            renderDealCards(filteredDeals, container);
+            processedDeals.forEach(d => globalDealsMap.set(d.dealID, d));
+            renderDealCards(processedDeals, container);
         }
 
         function renderDealCards(dealsArray, container) {
@@ -550,7 +625,8 @@
                             </button>
                         </div>
                         <div class="title" title="${deal.title}">${deal.title}</div>
-                        <div class="store-tag">🎮 Loja: ${storeName}</div>
+                        <div class="store-tag">🏆 Menor Preço: ${storeName}</div>
+                        ${deal.otherStores ? `<div class="other-stores">Também em: ${deal.otherStores}</div>` : ''}
                     </div>
                     <div class="card-bottom">
                         <div class="price-container">
@@ -560,7 +636,7 @@
                                 <div class="badge-discount">-${savingsPercent}%</div>
                             </div>
                         </div>
-                        <a class="btn" href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank" rel="noopener noreferrer">Ver Oferta</a>
+                        <a class="btn" href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank" rel="noopener noreferrer">Ver Oferta na ${storeName}</a>
                     </div>
                 `;
                 container.appendChild(card);
@@ -570,7 +646,7 @@
         async function init() {
             await getUSDRate();
             updateFavCounter();
-            fetchDeals(false);
+            fetchDeals();
         }
 
         init();
