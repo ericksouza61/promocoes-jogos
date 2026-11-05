@@ -226,7 +226,7 @@
     <div class="controls">
         <div class="control-group" style="flex-grow: 1; max-width: 220px;">
             <label for="searchTitle">Buscar por nome:</label>
-            <input type="text" id="searchTitle" placeholder="Ex: GTA, Elden Ring..." oninput="fetchDeals()">
+            <input type="text" id="searchTitle" placeholder="Ex: Dragon Ball, Resident Evil..." oninput="fetchDeals()">
         </div>
         
         <div class="control-group">
@@ -314,7 +314,16 @@
             "25": "Epic Games"
         };
 
-        // Catálogo expandido com dezenas de títulos de peso e comparação automática de menor preço
+        // URLs base oficiais de cada loja para busca direta e precisa caso o dealID seja customizado
+        const storeSearchUrls = {
+            "0": "https://store.steampowered.com/search/?term=",
+            "7": "https://www.gog.com/en/games?query=",
+            "15": "https://www.fanatical.com/en/search?search=",
+            "25": "https://store.epicgames.com/pt-BR/browse?q=",
+            "11": "https://www.humblebundle.com/store/search?sort=bestselling&search=",
+            "3": "https://www.greenmangaming.com/search?query="
+        };
+
         const gamesDatabase = [
             { gameID: "g1", title: "Dragon Ball FighterZ", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/678950/header.jpg", stores: [{ storeID: "15", normalPrice: "39.99", salePrice: "5.99", savings: "85.0", dealID: "dbfz_fanatical" }, { storeID: "0", normalPrice: "229.90", salePrice: "34.48", savings: "85.0", dealID: "dbfz_steam" }] },
             { gameID: "g2", title: "Cyberpunk 2077", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg", stores: [{ storeID: "0", normalPrice: "199.99", salePrice: "79.99", savings: "60.0", dealID: "cp2077_steam" }, { storeID: "7", normalPrice: "199.99", salePrice: "79.99", savings: "60.0", dealID: "cp2077_gog" }] },
@@ -450,6 +459,17 @@
             fetchDeals();
         }
 
+        // Função geradora de URLs de destino precisas para cada loja
+        function getRedirectUrl(dealID, storeID, title) {
+            // Se o dealID for um hash numérico oficial da CheapShark, usa a rota oficial de redirecionamento
+            if (/^[a-zA-Z0-9]{30,}$/.test(dealID)) {
+                return `https://www.cheapshark.com/redirect?dealID=${dealID}`;
+            }
+            // Caso contrário, direciona diretamente para a busca oficial do jogo na loja parceira correspondente
+            const baseUrl = storeSearchUrls[storeID] || "https://store.steampowered.com/search/?term=";
+            return baseUrl + encodeURIComponent(title);
+        }
+
         function fetchDeals() {
             showingFavoritesOnly = false;
             const container = document.getElementById('deals');
@@ -539,6 +559,7 @@
                 const storeName = storeNames[deal.storeID] || 'Loja Parceira';
                 const savingsPercent = Math.round(parseFloat(deal.savings) || 0);
                 const isFav = favs.some(f => f.dealID === deal.dealID);
+                const targetUrl = getRedirectUrl(deal.dealID, deal.storeID, deal.title);
 
                 const card = document.createElement('div');
                 card.className = 'card';
@@ -562,7 +583,7 @@
                                 <div class="badge-discount">-${savingsPercent}%</div>
                             </div>
                         </div>
-                        <a class="btn" href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank" rel="noopener noreferrer">Ver Oferta na ${storeName}</a>
+                        <a class="btn" href="${targetUrl}" target="_blank" rel="noopener noreferrer">Ver Oferta na ${storeName}</a>
                     </div>
                 `;
                 container.appendChild(card);
