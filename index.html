@@ -231,12 +231,12 @@
         
         <div class="control-group">
             <label for="minPrice">Preço mín. (R$):</label>
-            <input type="number" id="minPrice" value="0" min="0" max="1000" style="width: 95px;" onchange="fetchDeals()">
+            <input type="number" id="minPrice" value="0" min="0" max="500" style="width: 95px;" onchange="fetchDeals()">
         </div>
 
         <div class="control-group">
             <label for="maxPrice">Preço máx. (R$):</label>
-            <input type="number" id="maxPrice" value="1000" min="5" max="1000" style="width: 95px;" onchange="fetchDeals()">
+            <input type="number" id="maxPrice" value="300" min="5" max="500" style="width: 95px;" onchange="fetchDeals()">
         </div>
 
         <div class="control-group">
@@ -314,7 +314,6 @@
             "25": "Epic Games"
         };
 
-        // Catálogo com URLs DIRETA E ESPECÍFICAS de cada produto em suas respectivas lojas
         const gamesDatabase = [
             { 
                 gameID: "g1", 
@@ -638,7 +637,7 @@
         function clearFilters() {
             document.getElementById('searchTitle').value = '';
             document.getElementById('minPrice').value = 0;
-            document.getElementById('maxPrice').value = 1000;
+            document.getElementById('maxPrice').value = 300;
             document.getElementById('storeSelect').value = '';
             document.getElementById('sortBy').value = 'SavingsDesc';
             syncQuickStoreButtons('');
@@ -663,14 +662,13 @@
             showingFavoritesOnly = false;
             document.getElementById('searchTitle').value = '';
             document.getElementById('minPrice').value = 0;
-            document.getElementById('maxPrice').value = 1000;
+            document.getElementById('maxPrice').value = 300;
             document.getElementById('storeSelect').value = '';
             syncQuickStoreButtons('');
             document.getElementById('sortBy').value = 'SavingsDesc';
             fetchDeals();
         }
 
-        // Função geradora de URLs de destino diretas
         function getRedirectUrl(bestOffer, title) {
             if (bestOffer.directUrl) {
                 return bestOffer.directUrl;
@@ -689,7 +687,7 @@
             const titleInput = document.getElementById('searchTitle').value.trim().toLowerCase();
             const selectedStore = document.getElementById('storeSelect').value;
             const minPriceBRL = parseFloat(document.getElementById('minPrice').value) || 0;
-            const maxPriceBRL = parseFloat(document.getElementById('maxPrice').value) || 1000;
+            const maxPriceBRL = parseFloat(document.getElementById('maxPrice').value) || 300;
             const sortOption = document.getElementById('sortBy').value;
 
             let processedDeals = [];
@@ -752,7 +750,7 @@
                 container.innerHTML = `
                     <div class="loading" style="line-height: 1.6;">
                         🔍 Nenhuma promoção encontrada para essa busca.<br>
-                        <span style="font-size: 14px; color: #888;">Tente pesquisar outro termo ou clique em "Limpar".</span>
+                        <span style="font-size: 14px; color: #888;">Tente pesquisar outro termo ou alterar o teto de preço.</span>
                     </div>`;
                 return;
             }
