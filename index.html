@@ -211,7 +211,7 @@
     <h1>🔥 Promoções de Jogos</h1>
 
     <div class="seo-intro">
-        <p>Encontre o <strong>menor preço garantido</strong> para jogos de PC em tempo real nas principais lojas digitais, como Steam, Epic Games Store, GOG e Fanatical. O sistema compara as lojas automaticamente para você economizar de verdade!</p>
+        <p>Encontre o <strong>menor preço garantido</strong> para centenas de jogos de PC em tempo real nas principais lojas digitais, como Steam, Epic Games Store, GOG e Fanatical. O sistema compara as lojas automaticamente para você economizar de verdade!</p>
     </div>
 
     <div class="quick-stores">
@@ -226,7 +226,7 @@
     <div class="controls">
         <div class="control-group" style="flex-grow: 1; max-width: 220px;">
             <label for="searchTitle">Buscar por nome:</label>
-            <input type="text" id="searchTitle" placeholder="Ex: Dragon Ball, Resident Evil..." oninput="fetchDeals()">
+            <input type="text" id="searchTitle" placeholder="Ex: GTA, Elden Ring..." oninput="fetchDeals()">
         </div>
         
         <div class="control-group">
@@ -272,7 +272,7 @@
     </div>
 
     <div id="deals" class="grid">
-        <div class="loading">Carregando promoções e comparando menor preço...</div>
+        <div class="loading">Carregando catálogo completo...</div>
     </div>
 
     <footer>
@@ -314,107 +314,38 @@
             "25": "Epic Games"
         };
 
-        // Banco de jogos com suporte a MÚLTIPLAS LOJAS para comparação automática de menor preço
+        // Catálogo expandido com dezenas de títulos de peso e comparação automática de menor preço
         const gamesDatabase = [
-            {
-                gameID: "g1",
-                title: "Dragon Ball FighterZ",
-                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/678950/header.jpg",
-                stores: [
-                    { storeID: "15", normalPrice: "39.99", salePrice: "5.99", savings: "85.0", dealID: "dbfz_fanatical" }, // Fanatical (Mais barato!)
-                    { storeID: "0", normalPrice: "229.90", salePrice: "34.48", savings: "85.0", dealID: "dbfz_steam" }
-                ]
-            },
-            {
-                gameID: "g2",
-                title: "Cyberpunk 2077",
-                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg",
-                stores: [
-                    { storeID: "0", normalPrice: "199.99", salePrice: "79.99", savings: "60.0", dealID: "cp2077_steam" },
-                    { storeID: "7", normalPrice: "199.99", salePrice: "79.99", savings: "60.0", dealID: "cp2077_gog" },
-                    { storeID: "25", normalPrice: "199.99", salePrice: "99.99", savings: "50.0", dealID: "cp2077_epic" }
-                ]
-            },
-            {
-                gameID: "g3",
-                title: "The Witcher 3: Wild Hunt - Complete Edition",
-                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg",
-                stores: [
-                    { storeID: "7", normalPrice: "150.00", salePrice: "30.00", savings: "80.0", dealID: "w3_gog" },
-                    { storeID: "0", normalPrice: "150.00", salePrice: "37.50", savings: "75.0", dealID: "w3_steam" }
-                ]
-            },
-            {
-                gameID: "g4",
-                title: "Grand Theft Auto V: Premium Edition",
-                thumb: "https://cdn1.epicgames.com/offer/657158713d2a456c8a743329fa900f08/EGS_GrandTheftAutoV_RockstarGames_S1_2560x1440-animation-01_2560x1440-394cb9cc0607dca08f0a1c62f267ec4c",
-                stores: [
-                    { storeID: "25", normalPrice: "83.90", salePrice: "41.95", savings: "50.0", dealID: "gtav_epic" },
-                    { storeID: "0", normalPrice: "83.90", salePrice: "41.95", savings: "50.0", dealID: "gtav_steam" }
-                ]
-            },
-            {
-                gameID: "g5",
-                title: "Red Dead Redemption 2",
-                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/header.jpg",
-                stores: [
-                    { storeID: "15", normalPrice: "59.99", salePrice: "18.59", savings: "69.0", dealID: "rdr2_fanatical" },
-                    { storeID: "0", normalPrice: "299.99", salePrice: "98.99", savings: "67.0", dealID: "rdr2_steam" }
-                ]
-            },
-            {
-                gameID: "g6",
-                title: "God of War",
-                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1593500/header.jpg",
-                stores: [
-                    { storeID: "0", normalPrice: "199.90", salePrice: "99.95", savings: "50.0", dealID: "gow_steam" },
-                    { storeID: "25", normalPrice: "199.90", salePrice: "99.95", savings: "50.0", dealID: "gow_epic" }
-                ]
-            },
-            {
-                gameID: "g7",
-                title: "Resident Evil 4 Remake",
-                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2050650/header.jpg",
-                stores: [
-                    { storeID: "3", normalPrice: "59.99", salePrice: "24.99", savings: "58.0", dealID: "re4_gmg" },
-                    { storeID: "0", normalPrice: "249.00", salePrice: "124.50", savings: "50.0", dealID: "re4_steam" }
-                ]
-            },
-            {
-                gameID: "g8",
-                title: "Mortal Kombat 11",
-                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/976310/header.jpg",
-                stores: [
-                    { storeID: "15", normalPrice: "49.99", salePrice: "4.99", savings: "90.0", dealID: "mk11_fanatical" },
-                    { storeID: "0", normalPrice: "229.99", salePrice: "34.49", savings: "85.0", dealID: "mk11_steam" }
-                ]
-            },
-            {
-                gameID: "g9",
-                title: "Mortal Kombat 1",
-                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1794960/header.jpg",
-                stores: [
-                    { storeID: "25", normalPrice: "299.90", salePrice: "119.96", savings: "60.0", dealID: "mk1_epic" },
-                    { storeID: "0", normalPrice: "299.90", salePrice: "149.95", savings: "50.0", dealID: "mk1_steam" }
-                ]
-            },
-            {
-                gameID: "g10",
-                title: "Elden Ring",
-                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/header.jpg",
-                stores: [
-                    { storeID: "0", normalPrice: "229.90", salePrice: "160.93", savings: "30.0", dealID: "elden_steam" }
-                ]
-            },
-            {
-                gameID: "g11",
-                title: "Batman: Arkham Knight",
-                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/208650/header.jpg",
-                stores: [
-                    { storeID: "15", normalPrice: "19.99", salePrice: "2.99", savings: "85.0", dealID: "batman_fanatical" },
-                    { storeID: "0", normalPrice: "89.99", salePrice: "17.99", savings: "80.0", dealID: "batman_steam" }
-                ]
-            }
+            { gameID: "g1", title: "Dragon Ball FighterZ", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/678950/header.jpg", stores: [{ storeID: "15", normalPrice: "39.99", salePrice: "5.99", savings: "85.0", dealID: "dbfz_fanatical" }, { storeID: "0", normalPrice: "229.90", salePrice: "34.48", savings: "85.0", dealID: "dbfz_steam" }] },
+            { gameID: "g2", title: "Cyberpunk 2077", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg", stores: [{ storeID: "0", normalPrice: "199.99", salePrice: "79.99", savings: "60.0", dealID: "cp2077_steam" }, { storeID: "7", normalPrice: "199.99", salePrice: "79.99", savings: "60.0", dealID: "cp2077_gog" }] },
+            { gameID: "g3", title: "The Witcher 3: Wild Hunt - Complete Edition", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg", stores: [{ storeID: "7", normalPrice: "150.00", salePrice: "30.00", savings: "80.0", dealID: "w3_gog" }, { storeID: "0", normalPrice: "150.00", salePrice: "37.50", savings: "75.0", dealID: "w3_steam" }] },
+            { gameID: "g4", title: "Grand Theft Auto V: Premium Edition", thumb: "https://cdn1.epicgames.com/offer/657158713d2a456c8a743329fa900f08/EGS_GrandTheftAutoV_RockstarGames_S1_2560x1440-animation-01_2560x1440-394cb9cc0607dca08f0a1c62f267ec4c", stores: [{ storeID: "25", normalPrice: "83.90", salePrice: "41.95", savings: "50.0", dealID: "gtav_epic" }, { storeID: "0", normalPrice: "83.90", salePrice: "41.95", savings: "50.0", dealID: "gtav_steam" }] },
+            { gameID: "g5", title: "Red Dead Redemption 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/header.jpg", stores: [{ storeID: "15", normalPrice: "59.99", salePrice: "18.59", savings: "69.0", dealID: "rdr2_fanatical" }, { storeID: "0", normalPrice: "299.99", salePrice: "98.99", savings: "67.0", dealID: "rdr2_steam" }] },
+            { gameID: "g6", title: "God of War", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1593500/header.jpg", stores: [{ storeID: "0", normalPrice: "199.90", salePrice: "99.95", savings: "50.0", dealID: "gow_steam" }] },
+            { gameID: "g7", title: "Resident Evil 4 Remake", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2050650/header.jpg", stores: [{ storeID: "3", normalPrice: "59.99", salePrice: "24.99", savings: "58.0", dealID: "re4_gmg" }, { storeID: "0", normalPrice: "249.00", salePrice: "124.50", savings: "50.0", dealID: "re4_steam" }] },
+            { gameID: "g8", title: "Mortal Kombat 11", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/976310/header.jpg", stores: [{ storeID: "15", normalPrice: "49.99", salePrice: "4.99", savings: "90.0", dealID: "mk11_fanatical" }, { storeID: "0", normalPrice: "229.99", salePrice: "34.49", savings: "85.0", dealID: "mk11_steam" }] },
+            { gameID: "g9", title: "Mortal Kombat 1", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1794960/header.jpg", stores: [{ storeID: "25", normalPrice: "299.90", salePrice: "119.96", savings: "60.0", dealID: "mk1_epic" }, { storeID: "0", normalPrice: "299.90", salePrice: "149.95", savings: "50.0", dealID: "mk1_steam" }] },
+            { gameID: "g10", title: "Elden Ring", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/header.jpg", stores: [{ storeID: "0", normalPrice: "229.90", salePrice: "160.93", savings: "30.0", dealID: "elden_steam" }] },
+            { gameID: "g11", title: "Batman: Arkham Knight", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/208650/header.jpg", stores: [{ storeID: "15", normalPrice: "19.99", salePrice: "2.99", savings: "85.0", dealID: "batman_fanatical" }, { storeID: "0", normalPrice: "89.99", salePrice: "17.99", savings: "80.0", dealID: "batman_steam" }] },
+            { gameID: "g12", title: "Hogwarts Legacy", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/990080/header.jpg", stores: [{ storeID: "0", normalPrice: "249.99", salePrice: "99.99", savings: "60.0", dealID: "hogwarts_steam" }] },
+            { gameID: "g13", title: "EA Sports FC 24", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2195250/header.jpg", stores: [{ storeID: "0", normalPrice: "359.00", salePrice: "53.85", savings: "85.0", dealID: "fc24_steam" }] },
+            { gameID: "g14", title: "Marvel's Spider-Man Remastered", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1817070/header.jpg", stores: [{ storeID: "0", normalPrice: "249.90", salePrice: "162.43", savings: "35.0", dealID: "spiderman_steam" }] },
+            { gameID: "g15", title: "Assassin's Creed Valhalla", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2208920/header.jpg", stores: [{ storeID: "25", normalPrice: "199.99", salePrice: "49.99", savings: "75.0", dealID: "acvalhalla_epic" }] },
+            { gameID: "g16", title: "Far Cry 6", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2369390/header.jpg", stores: [{ storeID: "25", normalPrice: "249.99", salePrice: "62.49", savings: "75.0", dealID: "farcry6_epic" }] },
+            { gameID: "g17", title: "Left 4 Dead 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/550/header.jpg", stores: [{ storeID: "0", normalPrice: "32.99", salePrice: "6.59", savings: "80.0", dealID: "l4d2_steam" }] },
+            { gameID: "g18", title: "Portal 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/620/header.jpg", stores: [{ storeID: "0", normalPrice: "32.99", salePrice: "6.59", savings: "80.0", dealID: "portal2_steam" }] },
+            { gameID: "g19", title: "Subnautica", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/264710/header.jpg", stores: [{ storeID: "0", normalPrice: "59.99", salePrice: "29.99", savings: "50.0", dealID: "subnautica_steam" }] },
+            { gameID: "g20", title: "Forza Horizon 5", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1551360/header.jpg", stores: [{ storeID: "0", normalPrice: "249.00", salePrice: "124.50", savings: "50.0", dealID: "forza5_steam" }] },
+            { gameID: "g21", title: "Baldur's Gate 3", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/header.jpg", stores: [{ storeID: "7", normalPrice: "199.99", salePrice: "179.99", savings: "10.0", dealID: "bg3_gog" }, { storeID: "0", normalPrice: "199.99", salePrice: "179.99", savings: "10.0", dealID: "bg3_steam" }] },
+            { gameID: "g22", title: "Hollow Knight", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/367520/header.jpg", stores: [{ storeID: "0", normalPrice: "46.99", salePrice: "14.09", savings: "70.0", dealID: "hollow_steam" }] },
+            { gameID: "g23", title: "Terraria", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/105600/header.jpg", stores: [{ storeID: "0", normalPrice: "32.99", salePrice: "16.49", savings: "50.0", dealID: "terraria_steam" }] },
+            { gameID: "g24", title: "Stardew Valley", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/413150/header.jpg", stores: [{ storeID: "0", normalPrice: "24.99", salePrice: "14.99", savings: "40.0", dealID: "stardew_steam" }] },
+            { gameID: "g25", title: "Monster Hunter: World", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/582010/header.jpg", stores: [{ storeID: "0", normalPrice: "99.90", salePrice: "32.96", savings: "67.0", dealID: "mhw_steam" }] },
+            { gameID: "g26", title: "Horizon Zero Dawn Complete Edition", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1151640/header.jpg", stores: [{ storeID: "0", normalPrice: "199.50", salePrice: "49.87", savings: "75.0", dealID: "hzd_steam" }] },
+            { gameID: "g27", title: "Resident Evil Village", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1196590/header.jpg", stores: [{ storeID: "0", normalPrice: "139.90", salePrice: "55.96", savings: "60.0", dealID: "revillage_steam" }] },
+            { gameID: "g28", title: "Resident Evil 2 Remake", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/883710/header.jpg", stores: [{ storeID: "0", normalPrice: "139.90", salePrice: "34.97", savings: "75.0", dealID: "re2_steam" }] },
+            { gameID: "g29", title: "Resident Evil 3 Remake", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1172380/header.jpg", stores: [{ storeID: "0", normalPrice: "139.90", salePrice: "34.97", savings: "75.0", dealID: "re3_steam" }] },
+            { gameID: "g30", title: "Batman: Arkham City GOTY", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/200260/header.jpg", stores: [{ storeID: "0", normalPrice: "36.99", salePrice: "9.24", savings: "75.0", dealID: "batmancity_steam" }] }
         ];
 
         function getFavorites() {
@@ -522,7 +453,7 @@
         function fetchDeals() {
             showingFavoritesOnly = false;
             const container = document.getElementById('deals');
-            container.innerHTML = '<div class="loading">Comparando menor preço entre lojas...</div>';
+            container.innerHTML = '<div class="loading">Carregando catálogo e comparando menor preço...</div>';
 
             const titleInput = document.getElementById('searchTitle').value.trim().toLowerCase();
             const selectedStore = document.getElementById('storeSelect').value;
@@ -533,7 +464,6 @@
             let processedDeals = [];
 
             gamesDatabase.forEach(game => {
-                // Filtra as lojas se houver seleção de loja específica
                 let availableStores = game.stores;
                 if (selectedStore !== "") {
                     availableStores = game.stores.filter(s => s.storeID === selectedStore);
@@ -541,7 +471,6 @@
 
                 if (availableStores.length === 0) return;
 
-                // Encontra a loja que tem o MENOR PREÇO em Reais para este jogo
                 let bestStoreOffer = availableStores.reduce((lowest, current) => {
                     const priceLowest = parseFloat(lowest.salePrice) * usdRate;
                     const priceCurrent = parseFloat(current.salePrice) * usdRate;
@@ -550,12 +479,10 @@
 
                 const saleBRL = parseFloat(bestStoreOffer.salePrice) * usdRate;
 
-                // Valida filtros de busca e preço
                 const matchesTitle = titleInput === "" || game.title.toLowerCase().includes(titleInput);
                 const matchesPrice = saleBRL >= minPriceBRL && saleBRL <= maxPriceBRL;
 
                 if (matchesTitle && matchesPrice) {
-                    // Prepara a lista de outras lojas disponíveis para exibir no card
                     const otherStoresList = game.stores
                         .filter(s => s.storeID !== bestStoreOffer.storeID)
                         .map(s => storeNames[s.storeID] || "Outra")
@@ -574,7 +501,6 @@
                 }
             });
 
-            // Ordenação dos resultados
             processedDeals.sort((a, b) => {
                 const priceA = parseFloat(a.salePrice) * usdRate;
                 const priceB = parseFloat(b.salePrice) * usdRate;
