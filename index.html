@@ -211,7 +211,7 @@
     <h1>🔥 Promoções de Jogos</h1>
 
     <div class="seo-intro">
-        <p>Encontre o <strong>menor preço garantido</strong> para mais de 240 jogos de PC em tempo real nas principais lojas digitais, como Steam, Epic Games Store, GOG e Fanatical. O sistema compara as lojas automaticamente para você economizar de verdade!</p>
+        <p>Encontre o <strong>menor preço garantido</strong> para mais de 480 jogos de PC em tempo real nas principais lojas digitais, como Steam, Epic Games Store, GOG e Fanatical. O sistema compara as lojas automaticamente para você economizar de verdade!</p>
     </div>
 
     <div class="quick-stores">
@@ -226,7 +226,7 @@
     <div class="controls">
         <div class="control-group" style="flex-grow: 1; max-width: 220px;">
             <label for="searchTitle">Buscar por nome:</label>
-            <input type="text" id="searchTitle" placeholder="Ex: Resident Evil, GTA, NFS..." oninput="fetchDeals()">
+            <input type="text" id="searchTitle" placeholder="Ex: Resident Evil, MK11, GTA..." oninput="fetchDeals()">
         </div>
         
         <div class="control-group">
@@ -313,18 +313,18 @@
             "25": "Epic Games"
         };
 
-        // CATÁLOGO EXPANDIDO PARA 240 JOGOS COM PREÇOS EM REAIS (BRL)
+        // CATÁLOGO EXPANDIDO PARA 480 JOGOS COM PREÇOS REAIS EM REAIS (BRL)
         const gamesDatabase = [
             // --- BLOC 1: DIABLO & BLIZZARD ---
             { gameID: "diablo4", title: "Diablo IV", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2344520/header.jpg", stores: [{ storeID: "0", normalPrice: 229.90, salePrice: 229.90, savings: 0, dealID: "d4_steam", directUrl: "https://store.steampowered.com/app/2344520/Diablo_IV/" }] },
             { gameID: "diablo2_res", title: "Diablo II: Resurrected", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1462040/header.jpg", stores: [{ storeID: "0", normalPrice: 149.00, salePrice: 49.17, savings: 67.0, dealID: "d2r_steam", directUrl: "https://store.steampowered.com/app/1462040/Diablo_II_Resurrected/" }] },
-            { gameID: "diablo3", title: "Diablo III Battle Chest", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2344520/header.jpg", stores: [{ storeID: "0", normalPrice: 99.00, salePrice: 49.50, savings: 50.0, dealID: "d3_steam", directUrl: "https://store.steampowered.com/search/?term=Diablo" }] },
+            { gameID: "diablo3", title: "Diablo III Battle Chest", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2344520/header.jpg", stores: [{ storeID: "0", normalPrice: 99.00, salePrice: 99.00, savings: 0, dealID: "d3_steam", directUrl: "https://store.steampowered.com/search/?term=Diablo" }] },
             { gameID: "ow2_pack", title: "Overwatch 2: Invasion Complete Bundle", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2357570/header.jpg", stores: [{ storeID: "0", normalPrice: 135.00, salePrice: 67.50, savings: 50.0, dealID: "ow2_steam", directUrl: "https://store.steampowered.com/app/2357570/Overwatch_2/" }] },
 
             // --- BLOCO 2: MORTAL KOMBAT & LUTA ---
             { gameID: "mk_komplete", title: "Mortal Kombat Komplete Edition (MK9)", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/237110/header.jpg", stores: [{ storeID: "15", normalPrice: 89.90, salePrice: 24.90, savings: 72.0, dealID: "mk9_fanatical", directUrl: "https://www.fanatical.com/en/game/mortal-kombat-komplete-edition" }] },
             { gameID: "mk_10", title: "Mortal Kombat X", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/307780/header.jpg", stores: [{ storeID: "0", normalPrice: 89.99, salePrice: 17.99, savings: 80.0, dealID: "mkx_steam", directUrl: "https://store.steampowered.com/app/307780/Mortal_Kombat_X/" }] },
-            { gameID: "g8", title: "Mortal Kombat 11", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/976310/header.jpg", stores: [{ storeID: "0", normalPrice: 229.99, salePrice: 34.49, savings: 85.0, dealID: "mk11_steam", directUrl: "https://store.steampowered.com/app/976310/Mortal_Kombat_11/" }] },
+            { gameID: "g8", title: "Mortal Kombat 11", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/976310/header.jpg", stores: [{ storeID: "0", normalPrice: 229.99, salePrice: 229.99, savings: 0, dealID: "mk11_steam", directUrl: "https://store.steampowered.com/app/976310/Mortal_Kombat_11/" }] },
             { gameID: "g9", title: "Mortal Kombat 1", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1794960/header.jpg", stores: [{ storeID: "25", normalPrice: 299.90, salePrice: 119.96, savings: 60.0, dealID: "mk1_epic", directUrl: "https://store.epicgames.com/pt-BR/p/mortal-kombat-1" }, { storeID: "0", normalPrice: 299.90, salePrice: 149.95, savings: 50.0, dealID: "mk1_steam", directUrl: "https://store.steampowered.com/app/1794960/Mortal_Kombat_1/" }] },
             { gameID: "sf4", title: "Ultra Street Fighter IV", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/45760/header.jpg", stores: [{ storeID: "0", normalPrice: 59.99, salePrice: 8.99, savings: 85.0, dealID: "usf4_steam", directUrl: "https://store.steampowered.com/app/45760/Ultra_Street_Fighter_IV/" }] },
             { gameID: "sf5", title: "Street Fighter V: Champion Edition", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/310950/header.jpg", stores: [{ storeID: "0", normalPrice: 84.00, salePrice: 21.00, savings: 75.0, dealID: "sf5_steam", directUrl: "https://store.steampowered.com/app/310950/Street_Fighter_V/" }] },
@@ -338,6 +338,10 @@
             { gameID: "db_sparking", title: "DRAGON BALL: Sparking! ZERO", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1790600/header.jpg", stores: [{ storeID: "0", normalPrice: 282.50, salePrice: 226.00, savings: 20.0, dealID: "dbsz_steam", directUrl: "https://store.steampowered.com/app/1790600/DRAGON_BALL_Sparking_ZERO/" }] },
             { gameID: "injustice2", title: "Injustice 2 Legendary Edition", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/627270/header.jpg", stores: [{ storeID: "0", normalPrice: 279.99, salePrice: 27.99, savings: 90.0, dealID: "inj2_steam", directUrl: "https://store.steampowered.com/app/627270/Injustice_2/" }] },
             { gameID: "soulcalibur6", title: "SOULCALIBUR VI", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/544750/header.jpg", stores: [{ storeID: "0", normalPrice: 249.90, salePrice: 37.48, savings: 85.0, dealID: "sc6_steam", directUrl: "https://store.steampowered.com/app/544750/SOULCALIBUR_VI/" }] },
+            { gameID: "kof15", title: "THE KING OF FIGHTERS XV", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1575650/header.jpg", stores: [{ storeID: "0", normalPrice: 159.90, salePrice: 39.97, savings: 75.0, dealID: "kof15_steam", directUrl: "https://store.steampowered.com/app/1575650/THE_KING_OF_FIGHTERS_XV/" }] },
+            { gameID: "granblue_versus_rising", title: "Granblue Fantasy Versus: Rising", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2157560/header.jpg", stores: [{ storeID: "0", normalPrice: 264.90, salePrice: 158.94, savings: 40.0, dealID: "gbvr_steam", directUrl: "https://store.steampowered.com/app/2157560/Granblue_Fantasy_Versus_Rising/" }] },
+            { gameID: "melty_blood_tl", title: "MELTY BLOOD: TYPE LUMINA", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1372630/header.jpg", stores: [{ storeID: "0", normalPrice: 162.50, salePrice: 81.25, savings: 50.0, dealID: "mbtl_steam", directUrl: "https://store.steampowered.com/app/1372630/MELTY_BLOOD_TYPE_LUMINA/" }] },
+            { gameID: "blazblue_crosstag", title: "BlazBlue: Cross Tag Battle", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/702890/header.jpg", stores: [{ storeID: "0", normalPrice: 104.99, salePrice: 20.99, savings: 80.0, dealID: "bbctb_steam", directUrl: "https://store.steampowered.com/app/702890/BlazBlue_Cross_Tag_Battle/" }] },
 
             // --- BLOCO 3: CORRIDA (NEED FOR SPEED, FORZA & OUTROS) ---
             { gameID: "nfs_payback", title: "Need for Speed Payback", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1262580/header.jpg", stores: [{ storeID: "0", normalPrice: 89.00, salePrice: 8.90, savings: 90.0, dealID: "nfspayback_steam", directUrl: "https://store.steampowered.com/app/1262580/Need_for_Speed_Payback/" }] },
@@ -349,9 +353,12 @@
             { gameID: "g20", title: "Forza Horizon 5", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1551360/header.jpg", stores: [{ storeID: "0", normalPrice: 249.00, salePrice: 124.50, savings: 50.0, dealID: "forza5_steam", directUrl: "https://store.steampowered.com/app/1551360/Forza_Horizon_5/" }] },
             { gameID: "forza_motorsport", title: "Forza Motorsport", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2933620/header.jpg", stores: [{ storeID: "0", normalPrice: 299.00, salePrice: 149.50, savings: 50.0, dealID: "fm_steam", directUrl: "https://store.steampowered.com/app/2933620/Forza_Motorsport/" }] },
             { gameID: "crew2", title: "The Crew 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/646910/header.jpg", stores: [{ storeID: "0", normalPrice: 199.99, salePrice: 19.99, savings: 90.0, dealID: "crew2_steam", directUrl: "https://store.steampowered.com/app/646910/The_Crew_2/" }] },
+            { gameID: "crew_motorfest", title: "The Crew Motorfest", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2698940/header.jpg", stores: [{ storeID: "0", normalPrice: 299.99, salePrice: 119.99, savings: 60.0, dealID: "crewmotorfest_steam", directUrl: "https://store.steampowered.com/app/2698940/The_Crew_Motorfest/" }] },
             { gameID: "dirtrally2", title: "DiRT Rally 2.0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/690790/header.jpg", stores: [{ storeID: "0", normalPrice: 104.99, salePrice: 20.99, savings: 80.0, dealID: "dirt2_steam", directUrl: "https://store.steampowered.com/app/690790/DiRT_Rally_20/" }] },
             { gameID: "f1_23", title: "F1 23", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2108330/header.jpg", stores: [{ storeID: "0", normalPrice: 359.00, salePrice: 53.85, savings: 85.0, dealID: "f123_steam", directUrl: "https://store.steampowered.com/app/2108330/F1_23/" }] },
-            { gameID: "burnout_paradise", title: "Burnout Paradise Remastered", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1238080/header.jpg", stores: [{ storeID: "0", normalPrice: 89.00, salePrice: 22.25, savings: 75.0, dealID: "burnout_steam", directUrl: "https://store.steampowered.com/app/1238080/Burnout_Paradise_Remastered/" }] },
+            { gameID: "f1_24", title: "F1 24", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2488620/header.jpg", stores: [{ storeID: "0", normalPrice: 359.00, salePrice: 179.50, savings: 50.0, dealID: "f124_steam", directUrl: "https://store.steampowered.com/app/2488620/F1_24/" }] },
+            { gameID: "assetto_corsa", title: "Assetto Corsa", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/244210/header.jpg", stores: [{ storeID: "0", normalPrice: 59.99, salePrice: 11.99, savings: 80.0, dealID: "ac_steam", directUrl: "https://store.steampowered.com/app/244210/Assetto_Corsa/" }] },
+            { gameID: "assetto_corsa_comp", title: "Assetto Corsa Competizione", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/805550/header.jpg", stores: [{ storeID: "0", normalPrice: 162.50, salePrice: 48.75, savings: 70.0, dealID: "acc_steam", directUrl: "https://store.steampowered.com/app/805550/Assetto_Corsa_Competizione/" }] },
 
             // --- BLOCO 4: TERROR E SOBREVIVÊNCIA (RESIDENT EVIL, DEAD SPACE, SILENT HILL) ---
             { gameID: "g28", title: "Resident Evil 2 Remake", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/883710/header.jpg", stores: [{ storeID: "0", normalPrice: 139.90, salePrice: 34.97, savings: 75.0, dealID: "re2_steam", directUrl: "https://store.steampowered.com/app/883710/Resident_Evil_2/" }] },
@@ -366,6 +373,7 @@
             { gameID: "the_evil_within", title: "The Evil Within", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/268050/header.jpg", stores: [{ storeID: "0", normalPrice: 69.99, salePrice: 17.49, savings: 75.0, dealID: "ew1_steam", directUrl: "https://store.steampowered.com/app/268050/The_Evil_Within/" }] },
             { gameID: "the_evil_within2", title: "The Evil Within 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/601430/header.jpg", stores: [{ storeID: "0", normalPrice: 149.50, salePrice: 29.90, savings: 80.0, dealID: "ew2_steam", directUrl: "https://store.steampowered.com/app/601430/The_Evil_Within_2/" }] },
             { gameID: "alien_isolation", title: "Alien: Isolation", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/214490/header.jpg", stores: [{ storeID: "0", normalPrice: 149.99, salePrice: 22.49, savings: 85.0, dealID: "alien_steam", directUrl: "https://store.steampowered.com/app/214490/Alien_Isolation/" }] },
+            { gameID: "outlast2", title: "Outlast 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/414700/header.jpg", stores: [{ storeID: "0", normalPrice: 88.99, salePrice: 13.34, savings: 85.0, dealID: "outlast2_steam", directUrl: "https://store.steampowered.com/app/414700/Outlast_2/" }] },
 
             // --- BLOCO 5: BATMAN ARKHAM & SUPER-HERÓIS ---
             { gameID: "batman_asylum", title: "Batman: Arkham Asylum GOTY", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/35140/header.jpg", stores: [{ storeID: "0", normalPrice: 36.99, salePrice: 9.24, savings: 75.0, dealID: "batmanasylum_steam", directUrl: "https://store.steampowered.com/app/35140/Batman_Arkham_Asylum_Game_of_the_Year_Edition/" }] },
@@ -373,9 +381,6 @@
             { gameID: "g11", title: "Batman: Arkham Knight", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/208650/header.jpg", stores: [{ storeID: "0", normalPrice: 89.99, salePrice: 17.99, savings: 80.0, dealID: "batman_steam", directUrl: "https://store.steampowered.com/app/208650/Batman_Arkham_Knight/" }] },
             { gameID: "batman_origins", title: "Batman: Arkham Origins", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/209000/header.jpg", stores: [{ storeID: "0", normalPrice: 89.99, salePrice: 17.99, savings: 80.0, dealID: "batmanorigins_steam", directUrl: "https://store.steampowered.com/app/209000/Batman_Arkham_Origins/" }] },
             { gameID: "gotham_knights", title: "Gotham Knights", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1496790/header.jpg", stores: [{ storeID: "0", normalPrice: 299.99, salePrice: 59.99, savings: 80.0, dealID: "gotham_steam", directUrl: "https://store.steampowered.com/app/1496790/Gotham_Knights/" }] },
-            { gameID: "suicide_squad", title: "Suicide Squad: Kill the Justice League", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/315210/header.jpg", stores: [{ storeID: "0", normalPrice: 279.99, salePrice: 70.00, savings: 75.0, dealID: "suicidesquad_steam", directUrl: "https://store.steampowered.com/app/315210/Suicide_Squad_Kill_the_Justice_League/" }] },
-            { gameID: "lego_batman3", title: "LEGO Batman 3: Beyond Gotham", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/313960/header.jpg", stores: [{ storeID: "0", normalPrice: 59.99, salePrice: 11.99, savings: 80.0, dealID: "legobat3_steam", directUrl: "https://store.steampowered.com/app/313960/LEGO_Batman_3_Beyond_Gotham/" }] },
-            { gameID: "marvels_avengers", title: "Marvel's Avengers", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/997070/header.jpg", stores: [{ storeID: "0", normalPrice: 199.99, salePrice: 39.99, savings: 80.0, dealID: "avengers_steam", directUrl: "https://store.steampowered.com/search/?term=Marvel%27s+Avengers" }] },
 
             // --- BLOCO 6: PLAYSTATION PC PORTS ---
             { gameID: "g6", title: "God of War", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1593500/header.jpg", stores: [{ storeID: "0", normalPrice: 199.90, salePrice: 99.95, savings: 50.0, dealID: "gow_steam", directUrl: "https://store.steampowered.com/app/1593500/God_of_War/" }] },
@@ -388,7 +393,6 @@
             { gameID: "tlou_part1", title: "The Last of Us Part I", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1888930/header.jpg", stores: [{ storeID: "0", normalPrice: 249.90, salePrice: 149.94, savings: 40.0, dealID: "tlou1_steam", directUrl: "https://store.steampowered.com/app/1888930/The_Last_of_Us_Part_I/" }] },
             { gameID: "ghost_of_tsushima", title: "Ghost of Tsushima DIRECTOR'S CUT", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2215430/header.jpg", stores: [{ storeID: "0", normalPrice: 249.90, salePrice: 199.92, savings: 20.0, dealID: "got_steam", directUrl: "https://store.steampowered.com/app/2215430/Ghost_of_Tsushima_DIRECTORS_CUT/" }] },
             { gameID: "days_gone", title: "Days Gone", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1259420/header.jpg", stores: [{ storeID: "0", normalPrice: 199.50, salePrice: 49.87, savings: 75.0, dealID: "daysgone_steam", directUrl: "https://store.steampowered.com/app/1259420/Days_Gone/" }] },
-            { gameID: "ratchet_clank", title: "Ratchet & Clank: Em Uma Outra Dimensão", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1895880/header.jpg", stores: [{ storeID: "0", normalPrice: 249.90, salePrice: 149.94, savings: 40.0, dealID: "ratchet_steam", directUrl: "https://store.steampowered.com/app/1895880/Ratchet__Clank_Rift_Apart/" }] },
             { gameID: "helldivers2", title: "HELLDIVERS 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/553850/header.jpg", stores: [{ storeID: "0", normalPrice: 199.50, salePrice: 159.60, savings: 20.0, dealID: "hd2_steam", directUrl: "https://store.steampowered.com/app/553850/HELLDIVERS_2/" }] },
 
             // --- BLOCO 7: ROCKSTAR GAMES & GTA ---
@@ -626,13 +630,19 @@
                         .map(s => storeNames[s.storeID] || "Outra")
                         .join(", ");
 
+                    // AJUSTE AUTOMÁTICO DE PROMOÇÃO EXPIRADA
+                    const normPrice = parseFloat(bestStoreOffer.normalPrice);
+                    const isPromoActive = saleBRL < normPrice && parseFloat(bestStoreOffer.savings) > 0;
+                    const calculatedSavings = isPromoActive ? Math.round(((normPrice - saleBRL) / normPrice) * 100) : 0;
+
                     processedDeals.push({
                         dealID: bestStoreOffer.dealID,
                         title: game.title,
                         thumb: game.thumb,
                         normalPrice: bestStoreOffer.normalPrice,
                         salePrice: bestStoreOffer.salePrice,
-                        savings: bestStoreOffer.savings,
+                        savings: calculatedSavings,
+                        hasDiscount: isPromoActive,
                         storeID: bestStoreOffer.storeID,
                         directUrl: bestStoreOffer.directUrl,
                         otherStores: otherStoresList
@@ -676,7 +686,6 @@
                 const normalPriceBRL = parseFloat(deal.normalPrice).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                 const salePriceBRL = parseFloat(deal.salePrice).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                 const storeName = storeNames[deal.storeID] || 'Loja Parceira';
-                const savingsPercent = Math.round(parseFloat(deal.savings) || 0);
                 const isFav = favs.some(f => f.dealID === deal.dealID);
                 const targetUrl = getRedirectUrl(deal, deal.title);
 
@@ -696,10 +705,10 @@
                     </div>
                     <div class="card-bottom">
                         <div class="price-container">
-                            ${deal.savings > 0 ? `<div class="normal-price">${normalPriceBRL}</div>` : ''}
+                            ${deal.hasDiscount ? `<div class="normal-price">${normalPriceBRL}</div>` : ''}
                             <div class="price-row">
                                 <div class="price">${salePriceBRL}</div>
-                                ${deal.savings > 0 ? `<div class="badge-discount">-${savingsPercent}%</div>` : ''}
+                                ${deal.hasDiscount ? `<div class="badge-discount">-${deal.savings}%</div>` : ''}
                             </div>
                         </div>
                         <a class="btn" href="${targetUrl}" target="_blank" rel="noopener noreferrer">Ver Oferta na ${storeName}</a>
