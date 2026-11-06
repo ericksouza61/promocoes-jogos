@@ -313,7 +313,20 @@
             "25": "Epic Games"
         };
 
-        // Todos os preços estão cadastrados DIRETAMENTE em Reais (BRL)
+        /* 
+           COMO ADICIONAR MAIS JOGOS MANUALMENTE:
+           Copie o modelo abaixo e cole dentro do array 'gamesDatabase':
+           
+           { 
+               gameID: "id_unico_do_jogo", 
+               title: "Nome do Jogo", 
+               thumb: "https://link_da_imagem.jpg", 
+               stores: [
+                   { storeID: "0", normalPrice: 199.90, salePrice: 99.90, savings: 50.0, dealID: "id_oferta", directUrl: "https://link_do_jogo_na_loja" }
+               ] 
+           },
+        */
+
         const gamesDatabase = [
             // --- FRANQUIA DIABLO ---
             { 
@@ -550,7 +563,7 @@
                 ] 
             },
 
-            // --- OUTROS SUCESSOS DE PESO ---
+            // --- OUTROS SUCESSOS DE PESO ADICIONADOS ---
             { 
                 gameID: "g2", 
                 title: "Cyberpunk 2077", 
@@ -617,6 +630,166 @@
                 stores: [
                     { storeID: "7", normalPrice: 199.99, salePrice: 179.99, savings: 10.0, dealID: "bg3_gog", directUrl: "https://www.gog.com/en/game/baldurs_gate_iii" },
                     { storeID: "0", normalPrice: 199.99, salePrice: 179.99, savings: 10.0, dealID: "bg3_steam", directUrl: "https://store.steampowered.com/app/1086940/Baldurs_Gate_3/" }
+                ] 
+            },
+            { 
+                gameID: "g17", 
+                title: "Left 4 Dead 2", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/550/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 32.99, salePrice: 6.59, savings: 80.0, dealID: "l4d2_steam", directUrl: "https://store.steampowered.com/app/550/Left_4_Dead_2/" }
+                ] 
+            },
+            { 
+                gameID: "g18", 
+                title: "Portal 2", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/620/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 32.99, salePrice: 6.59, savings: 80.0, dealID: "portal2_steam", directUrl: "https://store.steampowered.com/app/620/Portal_2/" }
+                ] 
+            },
+            { 
+                gameID: "g22", 
+                title: "Hollow Knight", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/367520/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 46.99, salePrice: 14.09, savings: 70.0, dealID: "hollow_steam", directUrl: "https://store.steampowered.com/app/367520/Hollow_Knight/" }
+                ] 
+            },
+            { 
+                gameID: "g23", 
+                title: "Terraria", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/105600/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 32.99, salePrice: 16.49, savings: 50.0, dealID: "terraria_steam", directUrl: "https://store.steampowered.com/app/105600/Terraria/" }
+                ] 
+            },
+            { 
+                gameID: "g24", 
+                title: "Stardew Valley", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/413150/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 24.99, salePrice: 14.99, savings: 40.0, dealID: "stardew_steam", directUrl: "https://store.steampowered.com/app/413150/Stardew_Valley/" }
+                ] 
+            },
+            { 
+                gameID: "g25", 
+                title: "Monster Hunter: World", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/582010/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 99.90, salePrice: 32.96, savings: 67.0, dealID: "mhw_steam", directUrl: "https://store.steampowered.com/app/582010/Monster_Hunter_World/" }
+                ] 
+            },
+            { 
+                gameID: "g26", 
+                title: "Horizon Zero Dawn Complete Edition", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1151640/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 199.50, salePrice: 49.87, savings: 75.0, dealID: "hzd_steam", directUrl: "https://store.steampowered.com/app/1151640/Horizon_Zero_Dawn_Complete_Edition/" }
+                ] 
+            },
+            { 
+                gameID: "dark_souls3", 
+                title: "DARK SOULS III", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/374320/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 229.90, salePrice: 114.95, savings: 50.0, dealID: "ds3_steam", directUrl: "https://store.steampowered.com/app/374320/DARK_SOULS_III/" }
+                ] 
+            },
+            { 
+                gameID: "sekiro", 
+                title: "Sekiro: Shadows Die Twice", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/814380/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 274.00, salePrice: 137.00, savings: 50.0, dealID: "sekiro_steam", directUrl: "https://store.steampowered.com/app/814380/Sekiro_Shadows_Die_Twice_GOTY_Edition/" }
+                ] 
+            },
+            { 
+                gameID: "devil_may_cry5", 
+                title: "Devil May Cry 5", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/601150/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 99.90, salePrice: 32.96, savings: 67.0, dealID: "dmc5_steam", directUrl: "https://store.steampowered.com/app/601150/Devil_May_Cry_5/" }
+                ] 
+            },
+            { 
+                gameID: "cuphead", 
+                title: "Cuphead", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/268910/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 36.99, salePrice: 25.89, savings: 30.0, dealID: "cuphead_steam", directUrl: "https://store.steampowered.com/app/268910/Cuphead/" }
+                ] 
+            },
+            { 
+                gameID: "dead_by_daylight", 
+                title: "Dead by Daylight", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/381210/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 49.99, salePrice: 19.99, savings: 60.0, dealID: "dbd_steam", directUrl: "https://store.steampowered.com/app/381210/Dead_by_Daylight/" }
+                ] 
+            },
+            { 
+                gameID: "sea_of_thieves", 
+                title: "Sea of Thieves 2024 Edition", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1172620/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 119.00, salePrice: 59.50, savings: 50.0, dealID: "sot_steam", directUrl: "https://store.steampowered.com/app/1172620/Sea_of_Thieves_2024_Edition/" }
+                ] 
+            },
+            { 
+                gameID: "rust", 
+                title: "Rust", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/252490/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 103.49, salePrice: 69.33, savings: 33.0, dealID: "rust_steam", directUrl: "https://store.steampowered.com/app/252490/Rust/" }
+                ] 
+            },
+            { 
+                gameID: "fallout4", 
+                title: "Fallout 4", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/377160/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 59.90, salePrice: 23.96, savings: 60.0, dealID: "fo4_steam", directUrl: "https://store.steampowered.com/app/377160/Fallout_4/" }
+                ] 
+            },
+            { 
+                gameID: "skyrim_se", 
+                title: "The Elder Scrolls V: Skyrim Special Edition", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/489830/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 149.00, salePrice: 37.25, savings: 75.0, dealID: "skyrim_steam", directUrl: "https://store.steampowered.com/app/489830/The_Elder_Scrolls_V_Skyrim_Special_Edition/" }
+                ] 
+            },
+            { 
+                gameID: "it_takes_two", 
+                title: "It Takes Two", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1426210/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 199.00, salePrice: 69.65, savings: 65.0, dealID: "ittakestwo_steam", directUrl: "https://store.steampowered.com/app/1426210/It_Takes_Two/" }
+                ] 
+            },
+            { 
+                gameID: "payday2", 
+                title: "PAYDAY 2", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/218620/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 32.99, salePrice: 6.59, savings: 80.0, dealID: "payday2_steam", directUrl: "https://store.steampowered.com/app/218620/PAYDAY_2/" }
+                ] 
+            },
+            { 
+                gameID: "euro_truck2", 
+                title: "Euro Truck Simulator 2", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/227300/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 61.99, salePrice: 15.49, savings: 75.0, dealID: "ets2_steam", directUrl: "https://store.steampowered.com/app/227300/Euro_Truck_Simulator_2/" }
+                ] 
+            },
+            { 
+                gameID: "tekken_tag2", 
+                title: "God of War Ragnarök", 
+                thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2322010/header.jpg", 
+                stores: [
+                    { storeID: "0", normalPrice: 249.90, salePrice: 199.92, savings: 20.0, dealID: "gowr_steam", directUrl: "https://store.steampowered.com/app/2322010/God_of_War_Ragnarok/" }
                 ] 
             }
         ];
