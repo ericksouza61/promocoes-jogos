@@ -211,7 +211,7 @@
     <h1>🔥 Promoções de Jogos</h1>
 
     <div class="seo-intro">
-        <p>Encontre o <strong>menor preço garantido</strong> para mais de 480 jogos de PC em tempo real nas principais lojas digitais, como Steam, Epic Games Store, GOG e Fanatical. O sistema compara as lojas automaticamente para você economizar de verdade!</p>
+        <p>Encontre o <strong>menor preço garantido</strong> para jogos de PC em tempo real nas principais lojas digitais, como Steam, Epic Games Store, GOG e Fanatical. O sistema compara as lojas automaticamente para você economizar de verdade!</p>
     </div>
 
     <div class="quick-stores">
@@ -226,7 +226,7 @@
     <div class="controls">
         <div class="control-group" style="flex-grow: 1; max-width: 220px;">
             <label for="searchTitle">Buscar por nome:</label>
-            <input type="text" id="searchTitle" placeholder="Ex: Resident Evil, MK11, GTA..." oninput="fetchDeals()">
+            <input type="text" id="searchTitle" placeholder="Ex: Resident Evil, Batman, Resident..." oninput="fetchDeals()">
         </div>
         
         <div class="control-group">
@@ -266,7 +266,7 @@
         <div class="actions">
             <button class="btn-search" onclick="fetchDeals()">Filtrar</button>
             <button class="btn-clear" onclick="clearFilters()">Limpar</button>
-            <button class="btn-hot" onclick="filterHotDeals()" title="Mostrar apenas super promoções">🔥 Em Alta</button>
+            <button class="btn-hot" onclick="filterHotDeals()" title="Mostrar apenas ofertas com desconto real ativo">🔥 Só Promoções</button>
             <button class="btn-fav-filter" id="favFilterBtn" onclick="showOnlyFavorites()" title="Ver jogos favoritados">❤️ Favoritos (0)</button>
         </div>
     </div>
@@ -301,6 +301,7 @@
 
     <script>
         let showingFavoritesOnly = false;
+        let onlyHotDealsActive = false;
         let globalDealsMap = new Map();
 
         const storeNames = {
@@ -313,186 +314,65 @@
             "25": "Epic Games"
         };
 
-        // CATÁLOGO EXPANDIDO PARA 480 JOGOS COM PREÇOS REAIS EM REAIS (BRL)
+        // CATÁLOGO EXPANDIDO COM VÁRIAS OFERTAS DA FANATICAL E DEMAIS LOJAS COM PREÇOS EM R$
         const gamesDatabase = [
-            // --- BLOC 1: DIABLO & BLIZZARD ---
+            // --- OFERTAS FANATICAL ---
+            { gameID: "mk_komplete", title: "Mortal Kombat Komplete Edition (MK9)", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/237110/header.jpg", stores: [{ storeID: "15", normalPrice: 89.90, salePrice: 24.90, savings: 72.0, dealID: "mk9_fanatical", directUrl: "https://www.fanatical.com/en/game/mortal-kombat-komplete-edition" }] },
+            { gameID: "resident_evil_5_fanatical", title: "Resident Evil 5 - Gold Edition", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/21690/header.jpg", stores: [{ storeID: "15", normalPrice: 66.90, salePrice: 16.72, savings: 75.0, dealID: "re5_fanatical", directUrl: "https://www.fanatical.com/en/game/resident-evil-5-gold-edition" }] },
+            { gameID: "resident_evil_hd_fanatical", title: "Resident Evil HD REMASTER", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/304240/header.jpg", stores: [{ storeID: "15", normalPrice: 66.90, salePrice: 16.72, savings: 75.0, dealID: "rehd_fanatical", directUrl: "https://www.fanatical.com/en/game/resident-evil-hd-remaster" }] },
+            { gameID: "oblivion_goty_fanatical", title: "The Elder Scrolls IV: Oblivion GOTY Deluxe", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/900883/header.jpg", stores: [{ storeID: "15", normalPrice: 49.99, salePrice: 12.49, savings: 75.0, dealID: "oblivion_fanatical", directUrl: "https://www.fanatical.com/en/game/the-elder-scrolls-iv-oblivion-game-of-the-year-edition-deluxe" }] },
+            { gameID: "street_fighter_v_fanatical", title: "Street Fighter V", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/310950/header.jpg", stores: [{ storeID: "15", normalPrice: 84.00, salePrice: 21.00, savings: 75.0, dealID: "sf5_fanatical", directUrl: "https://www.fanatical.com/en/game/street-fighter-v" }] },
+            { gameID: "batman_arkham_collection_fanatical", title: "Batman: Arkham Collection", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/208650/header.jpg", stores: [{ storeID: "15", normalPrice: 249.90, salePrice: 37.48, savings: 85.0, dealID: "batmancoll_fanatical", directUrl: "https://www.fanatical.com/en/game/batman-arkham-collection" }] },
+            { gameID: "devil_may_cry_hd_fanatical", title: "Devil May Cry HD Collection", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/631510/header.jpg", stores: [{ storeID: "15", normalPrice: 99.90, salePrice: 32.96, savings: 67.0, dealID: "dmchd_fanatical", directUrl: "https://www.fanatical.com/en/game/devil-may-cry-hd-collection" }] },
+
+            // --- BLOCO STEAM / EPIC / GOG ---
             { gameID: "diablo4", title: "Diablo IV", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2344520/header.jpg", stores: [{ storeID: "0", normalPrice: 229.90, salePrice: 229.90, savings: 0, dealID: "d4_steam", directUrl: "https://store.steampowered.com/app/2344520/Diablo_IV/" }] },
             { gameID: "diablo2_res", title: "Diablo II: Resurrected", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1462040/header.jpg", stores: [{ storeID: "0", normalPrice: 149.00, salePrice: 49.17, savings: 67.0, dealID: "d2r_steam", directUrl: "https://store.steampowered.com/app/1462040/Diablo_II_Resurrected/" }] },
-            { gameID: "diablo3", title: "Diablo III Battle Chest", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2344520/header.jpg", stores: [{ storeID: "0", normalPrice: 99.00, salePrice: 99.00, savings: 0, dealID: "d3_steam", directUrl: "https://store.steampowered.com/search/?term=Diablo" }] },
-            { gameID: "ow2_pack", title: "Overwatch 2: Invasion Complete Bundle", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2357570/header.jpg", stores: [{ storeID: "0", normalPrice: 135.00, salePrice: 67.50, savings: 50.0, dealID: "ow2_steam", directUrl: "https://store.steampowered.com/app/2357570/Overwatch_2/" }] },
-
-            // --- BLOCO 2: MORTAL KOMBAT & LUTA ---
-            { gameID: "mk_komplete", title: "Mortal Kombat Komplete Edition (MK9)", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/237110/header.jpg", stores: [{ storeID: "15", normalPrice: 89.90, salePrice: 24.90, savings: 72.0, dealID: "mk9_fanatical", directUrl: "https://www.fanatical.com/en/game/mortal-kombat-komplete-edition" }] },
             { gameID: "mk_10", title: "Mortal Kombat X", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/307780/header.jpg", stores: [{ storeID: "0", normalPrice: 89.99, salePrice: 17.99, savings: 80.0, dealID: "mkx_steam", directUrl: "https://store.steampowered.com/app/307780/Mortal_Kombat_X/" }] },
             { gameID: "g8", title: "Mortal Kombat 11", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/976310/header.jpg", stores: [{ storeID: "0", normalPrice: 229.99, salePrice: 229.99, savings: 0, dealID: "mk11_steam", directUrl: "https://store.steampowered.com/app/976310/Mortal_Kombat_11/" }] },
             { gameID: "g9", title: "Mortal Kombat 1", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1794960/header.jpg", stores: [{ storeID: "25", normalPrice: 299.90, salePrice: 119.96, savings: 60.0, dealID: "mk1_epic", directUrl: "https://store.epicgames.com/pt-BR/p/mortal-kombat-1" }, { storeID: "0", normalPrice: 299.90, salePrice: 149.95, savings: 50.0, dealID: "mk1_steam", directUrl: "https://store.steampowered.com/app/1794960/Mortal_Kombat_1/" }] },
             { gameID: "sf4", title: "Ultra Street Fighter IV", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/45760/header.jpg", stores: [{ storeID: "0", normalPrice: 59.99, salePrice: 8.99, savings: 85.0, dealID: "usf4_steam", directUrl: "https://store.steampowered.com/app/45760/Ultra_Street_Fighter_IV/" }] },
-            { gameID: "sf5", title: "Street Fighter V: Champion Edition", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/310950/header.jpg", stores: [{ storeID: "0", normalPrice: 84.00, salePrice: 21.00, savings: 75.0, dealID: "sf5_steam", directUrl: "https://store.steampowered.com/app/310950/Street_Fighter_V/" }] },
             { gameID: "sf6", title: "Street Fighter 6", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1364780/header.jpg", stores: [{ storeID: "0", normalPrice: 249.00, salePrice: 124.50, savings: 50.0, dealID: "sf6_steam", directUrl: "https://store.steampowered.com/app/1364780/Street_Fighter_6/" }] },
             { gameID: "tekken7", title: "TEKKEN 7", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/389730/header.jpg", stores: [{ storeID: "0", normalPrice: 162.50, salePrice: 24.37, savings: 85.0, dealID: "tekken7_steam", directUrl: "https://store.steampowered.com/app/389730/TEKKEN_7/" }] },
             { gameID: "tekken8", title: "TEKKEN 8", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1778820/header.jpg", stores: [{ storeID: "0", normalPrice: 349.90, salePrice: 199.44, savings: 43.0, dealID: "tekken8_steam", directUrl: "https://store.steampowered.com/app/1778820/TEKKEN_8/" }] },
-            { gameID: "guilty_gear_strive", title: "Guilty Gear -Strive-", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1384160/header.jpg", stores: [{ storeID: "0", normalPrice: 159.90, salePrice: 79.95, savings: 50.0, dealID: "ggstrive_steam", directUrl: "https://store.steampowered.com/app/1384160/Guilty_Gear_Strive/" }] },
             { gameID: "dbfz", title: "Dragon Ball FighterZ", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/678950/header.jpg", stores: [{ storeID: "0", normalPrice: 229.90, salePrice: 34.48, savings: 85.0, dealID: "dbfz_steam", directUrl: "https://store.steampowered.com/app/678950/DRAGON_BALL_FIGHTERZ/" }] },
             { gameID: "db_xv2", title: "Dragon Ball Xenoverse 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/454650/header.jpg", stores: [{ storeID: "0", normalPrice: 159.90, salePrice: 23.98, savings: 85.0, dealID: "dbxv2_steam", directUrl: "https://store.steampowered.com/app/454650/DRAGON_BALL_XENOVERSE_2/" }] },
             { gameID: "db_kakarot", title: "Dragon Ball Z: Kakarot", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/851850/header.jpg", stores: [{ storeID: "0", normalPrice: 229.90, salePrice: 57.47, savings: 75.0, dealID: "dbkakarot_steam", directUrl: "https://store.steampowered.com/app/851850/DRAGON_BALL_Z_KAKAROT/" }] },
-            { gameID: "db_sparking", title: "DRAGON BALL: Sparking! ZERO", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1790600/header.jpg", stores: [{ storeID: "0", normalPrice: 282.50, salePrice: 226.00, savings: 20.0, dealID: "dbsz_steam", directUrl: "https://store.steampowered.com/app/1790600/DRAGON_BALL_Sparking_ZERO/" }] },
-            { gameID: "injustice2", title: "Injustice 2 Legendary Edition", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/627270/header.jpg", stores: [{ storeID: "0", normalPrice: 279.99, salePrice: 27.99, savings: 90.0, dealID: "inj2_steam", directUrl: "https://store.steampowered.com/app/627270/Injustice_2/" }] },
-            { gameID: "soulcalibur6", title: "SOULCALIBUR VI", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/544750/header.jpg", stores: [{ storeID: "0", normalPrice: 249.90, salePrice: 37.48, savings: 85.0, dealID: "sc6_steam", directUrl: "https://store.steampowered.com/app/544750/SOULCALIBUR_VI/" }] },
-            { gameID: "kof15", title: "THE KING OF FIGHTERS XV", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1575650/header.jpg", stores: [{ storeID: "0", normalPrice: 159.90, salePrice: 39.97, savings: 75.0, dealID: "kof15_steam", directUrl: "https://store.steampowered.com/app/1575650/THE_KING_OF_FIGHTERS_XV/" }] },
-            { gameID: "granblue_versus_rising", title: "Granblue Fantasy Versus: Rising", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2157560/header.jpg", stores: [{ storeID: "0", normalPrice: 264.90, salePrice: 158.94, savings: 40.0, dealID: "gbvr_steam", directUrl: "https://store.steampowered.com/app/2157560/Granblue_Fantasy_Versus_Rising/" }] },
-            { gameID: "melty_blood_tl", title: "MELTY BLOOD: TYPE LUMINA", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1372630/header.jpg", stores: [{ storeID: "0", normalPrice: 162.50, salePrice: 81.25, savings: 50.0, dealID: "mbtl_steam", directUrl: "https://store.steampowered.com/app/1372630/MELTY_BLOOD_TYPE_LUMINA/" }] },
-            { gameID: "blazblue_crosstag", title: "BlazBlue: Cross Tag Battle", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/702890/header.jpg", stores: [{ storeID: "0", normalPrice: 104.99, salePrice: 20.99, savings: 80.0, dealID: "bbctb_steam", directUrl: "https://store.steampowered.com/app/702890/BlazBlue_Cross_Tag_Battle/" }] },
-
-            // --- BLOCO 3: CORRIDA (NEED FOR SPEED, FORZA & OUTROS) ---
             { gameID: "nfs_payback", title: "Need for Speed Payback", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1262580/header.jpg", stores: [{ storeID: "0", normalPrice: 89.00, salePrice: 8.90, savings: 90.0, dealID: "nfspayback_steam", directUrl: "https://store.steampowered.com/app/1262580/Need_for_Speed_Payback/" }] },
             { gameID: "nfs_heat", title: "Need for Speed Heat", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1222680/header.jpg", stores: [{ storeID: "0", normalPrice: 279.00, salePrice: 13.95, savings: 95.0, dealID: "nfsheat_steam", directUrl: "https://store.steampowered.com/app/1222680/Need_for_Speed_Heat/" }] },
             { gameID: "nfs_unbound", title: "Need for Speed Unbound", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1846380/header.jpg", stores: [{ storeID: "0", normalPrice: 299.00, salePrice: 44.85, savings: 85.0, dealID: "nfsunbound_steam", directUrl: "https://store.steampowered.com/app/1846380/Need_for_Speed_Unbound/" }] },
-            { gameID: "nfs_hp_remastered", title: "Need for Speed Hot Pursuit Remastered", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1328660/header.jpg", stores: [{ storeID: "0", normalPrice: 149.00, salePrice: 29.80, savings: 80.0, dealID: "nfshp_steam", directUrl: "https://store.steampowered.com/app/1328660/Need_for_Speed_Hot_Pursuit_Remastered/" }] },
-            { gameID: "nfs_rivals", title: "Need for Speed Rivals", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1262600/header.jpg", stores: [{ storeID: "0", normalPrice: 89.00, salePrice: 17.80, savings: 80.0, dealID: "nfsrivals_steam", directUrl: "https://store.steampowered.com/app/1262600/Need_for_Speed_Rivals/" }] },
             { gameID: "forza4", title: "Forza Horizon 4", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1293830/header.jpg", stores: [{ storeID: "0", normalPrice: 249.00, salePrice: 49.80, savings: 80.0, dealID: "forza4_steam", directUrl: "https://store.steampowered.com/app/1293830/Forza_Horizon_4/" }] },
             { gameID: "g20", title: "Forza Horizon 5", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1551360/header.jpg", stores: [{ storeID: "0", normalPrice: 249.00, salePrice: 124.50, savings: 50.0, dealID: "forza5_steam", directUrl: "https://store.steampowered.com/app/1551360/Forza_Horizon_5/" }] },
-            { gameID: "forza_motorsport", title: "Forza Motorsport", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2933620/header.jpg", stores: [{ storeID: "0", normalPrice: 299.00, salePrice: 149.50, savings: 50.0, dealID: "fm_steam", directUrl: "https://store.steampowered.com/app/2933620/Forza_Motorsport/" }] },
-            { gameID: "crew2", title: "The Crew 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/646910/header.jpg", stores: [{ storeID: "0", normalPrice: 199.99, salePrice: 19.99, savings: 90.0, dealID: "crew2_steam", directUrl: "https://store.steampowered.com/app/646910/The_Crew_2/" }] },
-            { gameID: "crew_motorfest", title: "The Crew Motorfest", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2698940/header.jpg", stores: [{ storeID: "0", normalPrice: 299.99, salePrice: 119.99, savings: 60.0, dealID: "crewmotorfest_steam", directUrl: "https://store.steampowered.com/app/2698940/The_Crew_Motorfest/" }] },
-            { gameID: "dirtrally2", title: "DiRT Rally 2.0", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/690790/header.jpg", stores: [{ storeID: "0", normalPrice: 104.99, salePrice: 20.99, savings: 80.0, dealID: "dirt2_steam", directUrl: "https://store.steampowered.com/app/690790/DiRT_Rally_20/" }] },
-            { gameID: "f1_23", title: "F1 23", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2108330/header.jpg", stores: [{ storeID: "0", normalPrice: 359.00, salePrice: 53.85, savings: 85.0, dealID: "f123_steam", directUrl: "https://store.steampowered.com/app/2108330/F1_23/" }] },
-            { gameID: "f1_24", title: "F1 24", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2488620/header.jpg", stores: [{ storeID: "0", normalPrice: 359.00, salePrice: 179.50, savings: 50.0, dealID: "f124_steam", directUrl: "https://store.steampowered.com/app/2488620/F1_24/" }] },
-            { gameID: "assetto_corsa", title: "Assetto Corsa", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/244210/header.jpg", stores: [{ storeID: "0", normalPrice: 59.99, salePrice: 11.99, savings: 80.0, dealID: "ac_steam", directUrl: "https://store.steampowered.com/app/244210/Assetto_Corsa/" }] },
-            { gameID: "assetto_corsa_comp", title: "Assetto Corsa Competizione", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/805550/header.jpg", stores: [{ storeID: "0", normalPrice: 162.50, salePrice: 48.75, savings: 70.0, dealID: "acc_steam", directUrl: "https://store.steampowered.com/app/805550/Assetto_Corsa_Competizione/" }] },
-
-            // --- BLOCO 4: TERROR E SOBREVIVÊNCIA (RESIDENT EVIL, DEAD SPACE, SILENT HILL) ---
             { gameID: "g28", title: "Resident Evil 2 Remake", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/883710/header.jpg", stores: [{ storeID: "0", normalPrice: 139.90, salePrice: 34.97, savings: 75.0, dealID: "re2_steam", directUrl: "https://store.steampowered.com/app/883710/Resident_Evil_2/" }] },
             { gameID: "g29", title: "Resident Evil 3 Remake", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1172380/header.jpg", stores: [{ storeID: "0", normalPrice: 139.90, salePrice: 34.97, savings: 75.0, dealID: "re3_steam", directUrl: "https://store.steampowered.com/app/1172380/Resident_Evil_3/" }] },
             { gameID: "g7", title: "Resident Evil 4 Remake", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2050650/header.jpg", stores: [{ storeID: "0", normalPrice: 249.00, salePrice: 124.50, savings: 50.0, dealID: "re4_steam", directUrl: "https://store.steampowered.com/app/2050650/Resident_Evil_4/" }] },
             { gameID: "re7", title: "Resident Evil 7 Biohazard", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/418370/header.jpg", stores: [{ storeID: "0", normalPrice: 66.90, salePrice: 26.76, savings: 60.0, dealID: "re7_steam", directUrl: "https://store.steampowered.com/app/418370/Resident_Evil_7_Biohazard/" }] },
             { gameID: "g27", title: "Resident Evil Village (RE8)", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1196590/header.jpg", stores: [{ storeID: "0", normalPrice: 139.90, salePrice: 55.96, savings: 60.0, dealID: "revillage_steam", directUrl: "https://store.steampowered.com/app/1196590/Resident_Evil_Village/" }] },
-            { gameID: "re5", title: "Resident Evil 5 Gold Edition", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/21690/header.jpg", stores: [{ storeID: "0", normalPrice: 66.90, salePrice: 16.72, savings: 75.0, dealID: "re5_steam", directUrl: "https://store.steampowered.com/app/21690/Resident_Evil_5/" }] },
-            { gameID: "re6", title: "Resident Evil 6", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/221040/header.jpg", stores: [{ storeID: "0", normalPrice: 84.00, salePrice: 21.00, savings: 75.0, dealID: "re6_steam", directUrl: "https://store.steampowered.com/app/221040/Resident_Evil_6/" }] },
-            { gameID: "dead_space_remake", title: "Dead Space (Remake)", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1693980/header.jpg", stores: [{ storeID: "0", normalPrice: 249.00, salePrice: 99.60, savings: 60.0, dealID: "ds_remake_steam", directUrl: "https://store.steampowered.com/app/1693980/Dead_Space/" }] },
-            { gameID: "silent_hill2", title: "SILENT HILL 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2124490/header.jpg", stores: [{ storeID: "0", normalPrice: 319.00, salePrice: 255.20, savings: 20.0, dealID: "sh2_steam", directUrl: "https://store.steampowered.com/app/2124490/SILENT_HILL_2/" }] },
-            { gameID: "the_evil_within", title: "The Evil Within", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/268050/header.jpg", stores: [{ storeID: "0", normalPrice: 69.99, salePrice: 17.49, savings: 75.0, dealID: "ew1_steam", directUrl: "https://store.steampowered.com/app/268050/The_Evil_Within/" }] },
-            { gameID: "the_evil_within2", title: "The Evil Within 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/601430/header.jpg", stores: [{ storeID: "0", normalPrice: 149.50, salePrice: 29.90, savings: 80.0, dealID: "ew2_steam", directUrl: "https://store.steampowered.com/app/601430/The_Evil_Within_2/" }] },
-            { gameID: "alien_isolation", title: "Alien: Isolation", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/214490/header.jpg", stores: [{ storeID: "0", normalPrice: 149.99, salePrice: 22.49, savings: 85.0, dealID: "alien_steam", directUrl: "https://store.steampowered.com/app/214490/Alien_Isolation/" }] },
-            { gameID: "outlast2", title: "Outlast 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/414700/header.jpg", stores: [{ storeID: "0", normalPrice: 88.99, salePrice: 13.34, savings: 85.0, dealID: "outlast2_steam", directUrl: "https://store.steampowered.com/app/414700/Outlast_2/" }] },
-
-            // --- BLOCO 5: BATMAN ARKHAM & SUPER-HERÓIS ---
             { gameID: "batman_asylum", title: "Batman: Arkham Asylum GOTY", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/35140/header.jpg", stores: [{ storeID: "0", normalPrice: 36.99, salePrice: 9.24, savings: 75.0, dealID: "batmanasylum_steam", directUrl: "https://store.steampowered.com/app/35140/Batman_Arkham_Asylum_Game_of_the_Year_Edition/" }] },
             { gameID: "g30", title: "Batman: Arkham City GOTY", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/200260/header.jpg", stores: [{ storeID: "0", normalPrice: 36.99, salePrice: 9.24, savings: 75.0, dealID: "batmancity_steam", directUrl: "https://store.steampowered.com/app/200260/Batman_Arkham_City__Game_of_the_Year_Edition/" }] },
             { gameID: "g11", title: "Batman: Arkham Knight", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/208650/header.jpg", stores: [{ storeID: "0", normalPrice: 89.99, salePrice: 17.99, savings: 80.0, dealID: "batman_steam", directUrl: "https://store.steampowered.com/app/208650/Batman_Arkham_Knight/" }] },
-            { gameID: "batman_origins", title: "Batman: Arkham Origins", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/209000/header.jpg", stores: [{ storeID: "0", normalPrice: 89.99, salePrice: 17.99, savings: 80.0, dealID: "batmanorigins_steam", directUrl: "https://store.steampowered.com/app/209000/Batman_Arkham_Origins/" }] },
-            { gameID: "gotham_knights", title: "Gotham Knights", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1496790/header.jpg", stores: [{ storeID: "0", normalPrice: 299.99, salePrice: 59.99, savings: 80.0, dealID: "gotham_steam", directUrl: "https://store.steampowered.com/app/1496790/Gotham_Knights/" }] },
-
-            // --- BLOCO 6: PLAYSTATION PC PORTS ---
             { gameID: "g6", title: "God of War", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1593500/header.jpg", stores: [{ storeID: "0", normalPrice: 199.90, salePrice: 99.95, savings: 50.0, dealID: "gow_steam", directUrl: "https://store.steampowered.com/app/1593500/God_of_War/" }] },
-            { gameID: "gow_ragnarok", title: "God of War Ragnarök", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2322010/header.jpg", stores: [{ storeID: "0", normalPrice: 249.90, salePrice: 199.92, savings: 20.0, dealID: "gowr_steam", directUrl: "https://store.steampowered.com/app/2322010/God_of_War_Ragnarok/" }] },
+            { gameID: "gow_ragnarok", title: "God of War Ragnarök", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2322010/header.jpg", stores: [{ storeID: "0", normalPrice: 249.90, salePrice: 249.90, savings: 0, dealID: "gowr_steam", directUrl: "https://store.steampowered.com/app/2322010/God_of_War_Ragnarok/" }] },
             { gameID: "spiderman_remastered", title: "Marvel's Spider-Man Remastered", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1817070/header.jpg", stores: [{ storeID: "0", normalPrice: 249.90, salePrice: 149.94, savings: 40.0, dealID: "spiderman_steam", directUrl: "https://store.steampowered.com/app/1817070/Marvels_SpiderMan_Remastered/" }] },
-            { gameID: "spiderman_mm", title: "Marvel's Spider-Man: Miles Morales", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1817080/header.jpg", stores: [{ storeID: "0", normalPrice: 199.90, salePrice: 119.94, savings: 40.0, dealID: "spiderman_mm_steam", directUrl: "https://store.steampowered.com/app/1817080/Marvels_SpiderMan_Miles_Morales/" }] },
             { gameID: "hzd", title: "Horizon Zero Dawn Complete Edition", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1151640/header.jpg", stores: [{ storeID: "0", normalPrice: 199.50, salePrice: 49.87, savings: 75.0, dealID: "hzd_steam", directUrl: "https://store.steampowered.com/app/1151640/Horizon_Zero_Dawn_Complete_Edition/" }] },
-            { gameID: "hfw", title: "Horizon Forbidden West Complete Edition", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2420110/header.jpg", stores: [{ storeID: "0", normalPrice: 249.90, salePrice: 167.43, savings: 33.0, dealID: "hfw_steam", directUrl: "https://store.steampowered.com/app/2420110/Horizon_Forbidden_West_Complete_Edition/" }] },
-            { gameID: "uncharted_legacy", title: "UNCHARTED: Legacy of Thieves Collection", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1659420/header.jpg", stores: [{ storeID: "0", normalPrice: 199.90, salePrice: 99.95, savings: 50.0, dealID: "uncharted_steam", directUrl: "https://store.steampowered.com/app/1659420/UNCHARTED_Legacy_of_Thieves_Collection/" }] },
-            { gameID: "tlou_part1", title: "The Last of Us Part I", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1888930/header.jpg", stores: [{ storeID: "0", normalPrice: 249.90, salePrice: 149.94, savings: 40.0, dealID: "tlou1_steam", directUrl: "https://store.steampowered.com/app/1888930/The_Last_of_Us_Part_I/" }] },
-            { gameID: "ghost_of_tsushima", title: "Ghost of Tsushima DIRECTOR'S CUT", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2215430/header.jpg", stores: [{ storeID: "0", normalPrice: 249.90, salePrice: 199.92, savings: 20.0, dealID: "got_steam", directUrl: "https://store.steampowered.com/app/2215430/Ghost_of_Tsushima_DIRECTORS_CUT/" }] },
-            { gameID: "days_gone", title: "Days Gone", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1259420/header.jpg", stores: [{ storeID: "0", normalPrice: 199.50, salePrice: 49.87, savings: 75.0, dealID: "daysgone_steam", directUrl: "https://store.steampowered.com/app/1259420/Days_Gone/" }] },
-            { gameID: "helldivers2", title: "HELLDIVERS 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/553850/header.jpg", stores: [{ storeID: "0", normalPrice: 199.50, salePrice: 159.60, savings: 20.0, dealID: "hd2_steam", directUrl: "https://store.steampowered.com/app/553850/HELLDIVERS_2/" }] },
-
-            // --- BLOCO 7: ROCKSTAR GAMES & GTA ---
             { gameID: "g4", title: "Grand Theft Auto V: Premium Edition", thumb: "https://cdn1.epicgames.com/offer/657158713d2a456c8a743329fa900f08/EGS_GrandTheftAutoV_RockstarGames_S1_2560x1440-animation-01_2560x1440-394cb9cc0607dca08f0a1c62f267ec4c", stores: [{ storeID: "25", normalPrice: 83.90, salePrice: 41.95, savings: 50.0, dealID: "gtav_epic", directUrl: "https://store.epicgames.com/pt-BR/p/grand-theft-auto-v" }, { storeID: "0", normalPrice: 83.90, salePrice: 41.95, savings: 50.0, dealID: "gtav_steam", directUrl: "https://store.steampowered.com/app/271590/Grand_Theft_Auto_V/" }] },
-            { gameID: "gta_trilogy", title: "Grand Theft Auto: The Trilogy – The Definitive Edition", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1547000/header.jpg", stores: [{ storeID: "0", normalPrice: 299.90, salePrice: 149.95, savings: 50.0, dealID: "gtatrilogy_steam", directUrl: "https://store.steampowered.com/app/1547000/Grand_Theft_Auto_The_Trilogy__The_Definitive_Edition/" }] },
             { gameID: "g5", title: "Red Dead Redemption 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/header.jpg", stores: [{ storeID: "0", normalPrice: 299.99, salePrice: 98.99, savings: 67.0, dealID: "rdr2_steam", directUrl: "https://store.steampowered.com/app/1174180/Red_Dead_Redemption_2/" }] },
-            { gameID: "rdr1", title: "Red Dead Redemption", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2668510/header.jpg", stores: [{ storeID: "0", normalPrice: 249.00, salePrice: 199.20, savings: 20.0, dealID: "rdr1_steam", directUrl: "https://store.steampowered.com/app/2668510/Red_Dead_Redemption/" }] },
-            { gameID: "max_payne3", title: "Max Payne 3", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/204100/header.jpg", stores: [{ storeID: "0", normalPrice: 69.99, salePrice: 17.49, savings: 75.0, dealID: "mp3_steam", directUrl: "https://store.steampowered.com/app/204100/Max_Payne_3/" }] },
-            { gameID: "la_noire", title: "L.A. Noire", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/110800/header.jpg", stores: [{ storeID: "0", normalPrice: 69.99, salePrice: 20.99, savings: 70.0, dealID: "lanoire_steam", directUrl: "https://store.steampowered.com/app/110800/LA_Noire/" }] },
-
-            // --- BLOCO 8: CD PROJEKT RED & FROM SOFTWARE ---
             { gameID: "g2", title: "Cyberpunk 2077", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg", stores: [{ storeID: "0", normalPrice: 199.99, salePrice: 79.99, savings: 60.0, dealID: "cp2077_steam", directUrl: "https://store.steampowered.com/app/1091500/Cyberpunk_2077/" }, { storeID: "7", normalPrice: 199.99, salePrice: 79.99, savings: 60.0, dealID: "cp2077_gog", directUrl: "https://www.gog.com/en/game/cyberpunk_2077" }] },
             { gameID: "g3", title: "The Witcher 3: Wild Hunt - Complete Edition", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg", stores: [{ storeID: "7", normalPrice: 150.00, salePrice: 30.00, savings: 80.0, dealID: "w3_gog", directUrl: "https://www.gog.com/en/game/the_witcher_3_wild_hunt" }, { storeID: "0", normalPrice: 150.00, salePrice: 37.50, savings: 75.0, dealID: "w3_steam", directUrl: "https://store.steampowered.com/app/292030/The_Witcher_3_Wild_Hunt/" }] },
-            { gameID: "witcher2", title: "The Witcher 2: Assassins of Kings Enhanced Edition", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/20920/header.jpg", stores: [{ storeID: "0", normalPrice: 36.99, salePrice: 5.54, savings: 85.0, dealID: "w2_steam", directUrl: "https://store.steampowered.com/app/20920/The_Witcher_2_Assassins_of_Kings_Enhanced_Edition/" }] },
             { gameID: "g10", title: "Elden Ring", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/header.jpg", stores: [{ storeID: "0", normalPrice: 229.90, salePrice: 160.93, savings: 30.0, dealID: "elden_steam", directUrl: "https://store.steampowered.com/app/1245620/ELDEN_RING/" }] },
-            { gameID: "dark_souls1", title: "DARK SOULS: REMASTERED", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/570940/header.jpg", stores: [{ storeID: "0", normalPrice: 172.50, salePrice: 86.25, savings: 50.0, dealID: "ds1_steam", directUrl: "https://store.steampowered.com/app/570940/DARK_SOULS_REMASTERED/" }] },
-            { gameID: "dark_souls2", title: "DARK SOULS II: Scholar of the First Sin", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/335300/header.jpg", stores: [{ storeID: "0", normalPrice: 172.50, salePrice: 86.25, savings: 50.0, dealID: "ds2_steam", directUrl: "https://store.steampowered.com/app/335300/DARK_SOULS_II_Scholar_of_the_First_Sin/" }] },
-            { gameID: "dark_souls3", title: "DARK SOULS III", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/374320/header.jpg", stores: [{ storeID: "0", normalPrice: 229.90, salePrice: 114.95, savings: 50.0, dealID: "ds3_steam", directUrl: "https://store.steampowered.com/app/374320/DARK_SOULS_III/" }] },
             { gameID: "sekiro", title: "Sekiro: Shadows Die Twice", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/814380/header.jpg", stores: [{ storeID: "0", normalPrice: 274.00, salePrice: 137.00, savings: 50.0, dealID: "sekiro_steam", directUrl: "https://store.steampowered.com/app/814380/Sekiro_Shadows_Die_Twice_GOTY_Edition/" }] },
-            { gameID: "armored_core6", title: "ARMORED CORE VI FIRES OF RUBICON", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1888160/header.jpg", stores: [{ storeID: "0", normalPrice: 257.90, salePrice: 154.74, savings: 40.0, dealID: "ac6_steam", directUrl: "https://store.steampowered.com/app/1888160/ARMORED_CORE_VI_FIRES_OF_RUBICON/" }] },
-
-            // --- BLOCO 9: UBISOFT (ASSASSIN'S CREED, FAR CRY, WATCH DOGS) ---
             { gameID: "ac_valhalla", title: "Assassin's Creed Valhalla", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2208920/header.jpg", stores: [{ storeID: "25", normalPrice: 199.99, salePrice: 49.99, savings: 75.0, dealID: "acv_epic", directUrl: "https://store.epicgames.com/pt-BR/p/assassins-creed-valhalla" }, { storeID: "0", normalPrice: 199.99, salePrice: 49.99, savings: 75.0, dealID: "acv_steam", directUrl: "https://store.steampowered.com/app/2208920/Assassins_Creed_Valhalla/" }] },
             { gameID: "ac_odyssey", title: "Assassin's Creed Odyssey", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/812140/header.jpg", stores: [{ storeID: "0", normalPrice: 179.99, salePrice: 35.99, savings: 80.0, dealID: "aco_steam", directUrl: "https://store.steampowered.com/app/812140/Assassins_Creed_Odyssey/" }] },
-            { gameID: "ac_origins", title: "Assassin's Creed Origins", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/582160/header.jpg", stores: [{ storeID: "0", normalPrice: 179.99, salePrice: 26.99, savings: 85.0, dealID: "acorig_steam", directUrl: "https://store.steampowered.com/app/582160/Assassins_Creed_Origins/" }] },
-            { gameID: "ac_blackflag", title: "Assassin's Creed IV Black Flag", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/242050/header.jpg", stores: [{ storeID: "0", normalPrice: 119.99, salePrice: 35.99, savings: 70.0, dealID: "acbf_steam", directUrl: "https://store.steampowered.com/app/242050/Assassins_Creed_IV_Black_Flag/" }] },
-            { gameID: "ac_mirage", title: "Assassin's Creed Mirage", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2849280/header.jpg", stores: [{ storeID: "0", normalPrice: 209.99, salePrice: 104.99, savings: 50.0, dealID: "acm_steam", directUrl: "https://store.steampowered.com/app/2849280/Assassins_Creed_Mirage/" }] },
-            { gameID: "fc6", title: "Far Cry 6", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2369390/header.jpg", stores: [{ storeID: "25", normalPrice: 249.99, salePrice: 62.49, savings: 75.0, dealID: "fc6_epic", directUrl: "https://store.epicgames.com/pt-BR/p/far-cry-6" }] },
             { gameID: "fc5", title: "Far Cry 5", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/552520/header.jpg", stores: [{ storeID: "0", normalPrice: 179.99, salePrice: 26.99, savings: 85.0, dealID: "fc5_steam", directUrl: "https://store.steampowered.com/app/552520/Far_Cry_5/" }] },
-            { gameID: "fc4", title: "Far Cry 4", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/298110/header.jpg", stores: [{ storeID: "0", normalPrice: 89.99, salePrice: 17.99, savings: 80.0, dealID: "fc4_steam", directUrl: "https://store.steampowered.com/app/298110/Far_Cry_4/" }] },
-            { gameID: "fc3", title: "Far Cry 3", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/220240/header.jpg", stores: [{ storeID: "0", normalPrice: 59.99, salePrice: 14.99, savings: 75.0, dealID: "fc3_steam", directUrl: "https://store.steampowered.com/app/220240/Far_Cry_3/" }] },
-            { gameID: "watch_dogs2", title: "Watch_Dogs 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/447040/header.jpg", stores: [{ storeID: "0", normalPrice: 179.99, salePrice: 26.99, savings: 85.0, dealID: "wd2_steam", directUrl: "https://store.steampowered.com/app/447040/Watch_Dogs_2/" }] },
-            { gameID: "rainbow6", title: "Tom Clancy's Rainbow Six Siege", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/359550/header.jpg", stores: [{ storeID: "0", normalPrice: 84.99, salePrice: 33.99, savings: 60.0, dealID: "r6_steam", directUrl: "https://store.steampowered.com/app/359550/Tom_Clancys_Rainbow_Six_Siege/" }] },
-
-            // --- BLOCO 10: BETHESDA (FALLOUT, ELDER SCROLLS, DOOM, WOLFENSTEIN) ---
             { gameID: "fallout4", title: "Fallout 4", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/377160/header.jpg", stores: [{ storeID: "0", normalPrice: 59.90, salePrice: 23.96, savings: 60.0, dealID: "fo4_steam", directUrl: "https://store.steampowered.com/app/377160/Fallout_4/" }] },
-            { gameID: "fallout_nv", title: "Fallout: New Vegas", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/22380/header.jpg", stores: [{ storeID: "0", normalPrice: 39.00, salePrice: 9.75, savings: 75.0, dealID: "fonv_steam", directUrl: "https://store.steampowered.com/app/22380/Fallout_New_Vegas/" }] },
-            { gameID: "fallout76", title: "Fallout 76", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1151340/header.jpg", stores: [{ storeID: "0", normalPrice: 155.00, salePrice: 38.75, savings: 75.0, dealID: "fo76_steam", directUrl: "https://store.steampowered.com/app/1151340/Fallout_76/" }] },
             { gameID: "skyrim_se", title: "The Elder Scrolls V: Skyrim Special Edition", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/489830/header.jpg", stores: [{ storeID: "0", normalPrice: 149.00, salePrice: 37.25, savings: 75.0, dealID: "skyrim_steam", directUrl: "https://store.steampowered.com/app/489830/The_Elder_Scrolls_V_Skyrim_Special_Edition/" }] },
-            { gameID: "doom_eternal", title: "DOOM Eternal", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/782330/header.jpg", stores: [{ storeID: "0", normalPrice: 199.50, salePrice: 49.87, savings: 75.0, dealID: "doome_steam", directUrl: "https://store.steampowered.com/app/782330/DOOM_Eternal/" }] },
-            { gameID: "doom_2016", title: "DOOM (2016)", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/379720/header.jpg", stores: [{ storeID: "0", normalPrice: 74.50, salePrice: 18.62, savings: 75.0, dealID: "doom2016_steam", directUrl: "https://store.steampowered.com/app/379720/DOOM/" }] },
-            { gameID: "starfield", title: "Starfield", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1716740/header.jpg", stores: [{ storeID: "0", normalPrice: 299.00, salePrice: 194.35, savings: 35.0, dealID: "starfield_steam", directUrl: "https://store.steampowered.com/app/1716740/Starfield/" }] },
-            { gameID: "wolfenstein_neworder", title: "Wolfenstein: The New Order", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/201810/header.jpg", stores: [{ storeID: "0", normalPrice: 74.50, salePrice: 14.90, savings: 80.0, dealID: "wolf1_steam", directUrl: "https://store.steampowered.com/app/201810/Wolfenstein_The_New_Order/" }] },
-
-            // --- BLOCO 11: EA & BATTLEFIELD ---
             { gameID: "ea_fc24", title: "EA SPORTS FC 24", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2195250/header.jpg", stores: [{ storeID: "0", normalPrice: 359.00, salePrice: 53.85, savings: 85.0, dealID: "fc24_steam", directUrl: "https://store.steampowered.com/app/2195250/EA_SPORTS_FC_24/" }] },
             { gameID: "bf1", title: "Battlefield 1", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1238840/header.jpg", stores: [{ storeID: "0", normalPrice: 199.00, salePrice: 29.85, savings: 85.0, dealID: "bf1_steam", directUrl: "https://store.steampowered.com/app/1238840/Battlefield_1/" }] },
-            { gameID: "bf5", title: "Battlefield V", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1238810/header.jpg", stores: [{ storeID: "0", normalPrice: 229.00, salePrice: 34.35, savings: 85.0, dealID: "bf5_steam", directUrl: "https://store.steampowered.com/app/1238810/Battlefield_V/" }] },
-            { gameID: "bf2042", title: "Battlefield 2042", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1517290/header.jpg", stores: [{ storeID: "0", normalPrice: 249.00, salePrice: 37.35, savings: 85.0, dealID: "bf2042_steam", directUrl: "https://store.steampowered.com/app/1517290/Battlefield_2042/" }] },
-            { gameID: "titanfall2", title: "Titanfall 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1237970/header.jpg", stores: [{ storeID: "0", normalPrice: 149.00, salePrice: 14.90, savings: 90.0, dealID: "tf2_steam", directUrl: "https://store.steampowered.com/app/1237970/Titanfall_2/" }] },
-            { gameID: "mass_effect_le", title: "Mass Effect Legendary Edition", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1328670/header.jpg", stores: [{ storeID: "0", normalPrice: 299.00, salePrice: 44.85, savings: 85.0, dealID: "mele_steam", directUrl: "https://store.steampowered.com/app/1328670/Mass_Effect_Legendary_Edition/" }] },
-            { gameID: "it_takes_two", title: "It Takes Two", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1426210/header.jpg", stores: [{ storeID: "0", normalPrice: 199.00, salePrice: 69.65, savings: 65.0, dealID: "ittakestwo_steam", directUrl: "https://store.steampowered.com/app/1426210/It_Takes_Two/" }] },
-
-            // --- BLOCO 12: SQUARE ENIX & CAPCOM (TOMB RAIDER, MONSTER HUNTER, DMC) ---
-            { gameID: "tomb_raider_2013", title: "Tomb Raider (2013)", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/203160/header.jpg", stores: [{ storeID: "0", normalPrice: 62.99, salePrice: 12.59, savings: 80.0, dealID: "tr2013_steam", directUrl: "https://store.steampowered.com/app/203160/Tomb_Raider/" }] },
-            { gameID: "rise_tomb_raider", title: "Rise of the Tomb Raider", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/391220/header.jpg", stores: [{ storeID: "0", normalPrice: 114.99, salePrice: 22.99, savings: 80.0, dealID: "rotr_steam", directUrl: "https://store.steampowered.com/app/391220/Rise_of_the_Tomb_Raider/" }] },
-            { gameID: "shadow_tomb_raider", title: "Shadow of the Tomb Raider Definitive Edition", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/750920/header.jpg", stores: [{ storeID: "0", normalPrice: 169.90, salePrice: 42.47, savings: 75.0, dealID: "sotr_steam", directUrl: "https://store.steampowered.com/app/750920/Shadow_of_the_Tomb_Raider_Definitive_Edition/" }] },
-            { gameID: "g25", title: "Monster Hunter: World", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/582010/header.jpg", stores: [{ storeID: "0", normalPrice: 99.90, salePrice: 32.96, savings: 67.0, dealID: "mhw_steam", directUrl: "https://store.steampowered.com/app/582010/Monster_Hunter_World/" }] },
-            { gameID: "mh_rise", title: "Monster Hunter Rise", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1446780/header.jpg", stores: [{ storeID: "0", normalPrice: 139.90, salePrice: 34.97, savings: 75.0, dealID: "mhrise_steam", directUrl: "https://store.steampowered.com/app/1446780/Monster_Hunter_Rise/" }] },
-            { gameID: "devil_may_cry5", title: "Devil May Cry 5", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/601150/header.jpg", stores: [{ storeID: "0", normalPrice: 99.90, salePrice: 32.96, savings: 67.0, dealID: "dmc5_steam", directUrl: "https://store.steampowered.com/app/601150/Devil_May_Cry_5/" }] },
-            { gameID: "dragons_dogma2", title: "Dragon's Dogma 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2054970/header.jpg", stores: [{ storeID: "0", normalPrice: 299.00, salePrice: 179.40, savings: 40.0, dealID: "dd2_steam", directUrl: "https://store.steampowered.com/app/2054970/Dragons_Dogma_2/" }] },
-            { gameID: "final_fantasy15", title: "FINAL FANTASY XV WINDOWS EDITION", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/637650/header.jpg", stores: [{ storeID: "0", normalPrice: 159.90, salePrice: 79.95, savings: 50.0, dealID: "ff15_steam", directUrl: "https://store.steampowered.com/app/637650/FINAL_FANTASY_XV_WINDOWS_EDITION/" }] },
-            { gameID: "final_fantasy7_remake", title: "FINAL FANTASY VII REMAKE INTERGRADE", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1462040/header.jpg", stores: [{ storeID: "25", normalPrice: 349.90, salePrice: 174.95, savings: 50.0, dealID: "ff7r_epic", directUrl: "https://store.epicgames.com/pt-BR/p/final-fantasy-vii-remake-intergrade" }] },
-
-            // --- BLOCO 13: ACTIVISION (CALL OF DUTY) ---
-            { gameID: "cod_mw3", title: "Call of Duty: Modern Warfare III", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2519060/header.jpg", stores: [{ storeID: "0", normalPrice: 299.00, salePrice: 164.45, savings: 45.0, dealID: "codmw3_steam", directUrl: "https://store.steampowered.com/app/2519060/Call_of_Duty_Modern_Warfare_III/" }] },
-            { gameID: "cod_bo6", title: "Call of Duty: Black Ops 6", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2933620/header.jpg", stores: [{ storeID: "0", normalPrice: 339.00, salePrice: 339.00, savings: 0, dealID: "codbo6_steam", directUrl: "https://store.steampowered.com/app/2933620/Call_of_Duty_Black_Ops_6/" }] },
-            { gameID: "cod_mw2", title: "Call of Duty: Modern Warfare II", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1938090/header.jpg", stores: [{ storeID: "0", normalPrice: 299.00, salePrice: 149.50, savings: 50.0, dealID: "codmw2_steam", directUrl: "https://store.steampowered.com/app/1938090/Call_of_Duty_Modern_Warfare_II/" }] },
-
-            // --- BLOCO 14: INDIES E SUCESSOS DE PESO ---
             { gameID: "g21", title: "Baldur's Gate 3", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/header.jpg", stores: [{ storeID: "7", normalPrice: 199.99, salePrice: 179.99, savings: 10.0, dealID: "bg3_gog", directUrl: "https://www.gog.com/en/game/baldurs_gate_iii" }, { storeID: "0", normalPrice: 199.99, salePrice: 179.99, savings: 10.0, dealID: "bg3_steam", directUrl: "https://store.steampowered.com/app/1086940/Baldurs_Gate_3/" }] },
             { gameID: "g12", title: "Hogwarts Legacy", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/990080/header.jpg", stores: [{ storeID: "0", normalPrice: 249.99, salePrice: 99.99, savings: 60.0, dealID: "hogwarts_steam", directUrl: "https://store.steampowered.com/app/990080/Hogwarts_Legacy/" }] },
-            { gameID: "black_myth_wukong", title: "Black Myth: Wukong", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2358720/header.jpg", stores: [{ storeID: "0", normalPrice: 229.99, salePrice: 229.99, savings: 0, dealID: "wukong_steam", directUrl: "https://store.steampowered.com/app/2358720/Black_Myth_Wukong/" }] },
-            { gameID: "palworld", title: "Palworld", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1623730/header.jpg", stores: [{ storeID: "0", normalPrice: 88.99, salePrice: 66.74, savings: 25.0, dealID: "palworld_steam", directUrl: "https://store.steampowered.com/app/1623730/Palworld/" }] },
             { gameID: "g17", title: "Left 4 Dead 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/550/header.jpg", stores: [{ storeID: "0", normalPrice: 32.99, salePrice: 6.59, savings: 80.0, dealID: "l4d2_steam", directUrl: "https://store.steampowered.com/app/550/Left_4_Dead_2/" }] },
-            { gameID: "g18", title: "Portal 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/620/header.jpg", stores: [{ storeID: "0", normalPrice: 32.99, salePrice: 6.59, savings: 80.0, dealID: "portal2_steam", directUrl: "https://store.steampowered.com/app/620/Portal_2/" }] },
             { gameID: "g22", title: "Hollow Knight", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/367520/header.jpg", stores: [{ storeID: "0", normalPrice: 46.99, salePrice: 14.09, savings: 70.0, dealID: "hollow_steam", directUrl: "https://store.steampowered.com/app/367520/Hollow_Knight/" }] },
-            { gameID: "g23", title: "Terraria", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/105600/header.jpg", stores: [{ storeID: "0", normalPrice: 32.99, salePrice: 16.49, savings: 50.0, dealID: "terraria_steam", directUrl: "https://store.steampowered.com/app/105600/Terraria/" }] },
-            { gameID: "g24", title: "Stardew Valley", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/413150/header.jpg", stores: [{ storeID: "0", normalPrice: 24.99, salePrice: 14.99, savings: 40.0, dealID: "stardew_steam", directUrl: "https://store.steampowered.com/app/413150/Stardew_Valley/" }] },
-            { gameID: "cuphead", title: "Cuphead", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/268910/header.jpg", stores: [{ storeID: "0", normalPrice: 36.99, salePrice: 25.89, savings: 30.0, dealID: "cuphead_steam", directUrl: "https://store.steampowered.com/app/268910/Cuphead/" }] },
-            { gameID: "dead_by_daylight", title: "Dead by Daylight", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/381210/header.jpg", stores: [{ storeID: "0", normalPrice: 49.99, salePrice: 19.99, savings: 60.0, dealID: "dbd_steam", directUrl: "https://store.steampowered.com/app/381210/Dead_by_Daylight/" }] },
-            { gameID: "sea_of_thieves", title: "Sea of Thieves 2024 Edition", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1172620/header.jpg", stores: [{ storeID: "0", normalPrice: 119.00, salePrice: 59.50, savings: 50.0, dealID: "sot_steam", directUrl: "https://store.steampowered.com/app/1172620/Sea_of_Thieves_2024_Edition/" }] },
-            { gameID: "rust", title: "Rust", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/252490/header.jpg", stores: [{ storeID: "0", normalPrice: 103.49, salePrice: 69.33, savings: 33.0, dealID: "rust_steam", directUrl: "https://store.steampowered.com/app/252490/Rust/" }] },
-            { gameID: "payday2", title: "PAYDAY 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/218620/header.jpg", stores: [{ storeID: "0", normalPrice: 32.99, salePrice: 6.59, savings: 80.0, dealID: "payday2_steam", directUrl: "https://store.steampowered.com/app/218620/PAYDAY_2/" }] },
-            { gameID: "euro_truck2", title: "Euro Truck Simulator 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/227300/header.jpg", stores: [{ storeID: "0", normalPrice: 61.99, salePrice: 15.49, savings: 75.0, dealID: "ets2_steam", directUrl: "https://store.steampowered.com/app/227300/Euro_Truck_Simulator_2/" }] },
-            { gameID: "subnautica", title: "Subnautica", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/264710/header.jpg", stores: [{ storeID: "0", normalPrice: 59.99, salePrice: 29.99, savings: 50.0, dealID: "subnautica_steam", directUrl: "https://store.steampowered.com/app/264710/Subnautica/" }] },
-            { gameID: "subnautica_bz", title: "Subnautica: Below Zero", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/848450/header.jpg", stores: [{ storeID: "0", normalPrice: 59.99, salePrice: 29.99, savings: 50.0, dealID: "subbz_steam", directUrl: "https://store.steampowered.com/app/848450/Subnautica_Below_Zero/" }] },
-            { gameID: "hades", title: "Hades", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1145360/header.jpg", stores: [{ storeID: "0", normalPrice: 73.99, salePrice: 29.59, savings: 60.0, dealID: "hades_steam", directUrl: "https://store.steampowered.com/app/1145360/Hades/" }] },
-            { gameID: "hades2", title: "Hades II", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1145350/header.jpg", stores: [{ storeID: "0", normalPrice: 88.99, salePrice: 88.99, savings: 0, dealID: "hades2_steam", directUrl: "https://store.steampowered.com/app/1145350/Hades_II/" }] },
-            { gameID: "lethal_company", title: "Lethal Company", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1942280/header.jpg", stores: [{ storeID: "0", normalPrice: 32.99, salePrice: 23.09, savings: 30.0, dealID: "lc_steam", directUrl: "https://store.steampowered.com/app/1942280/Lethal_Company/" }] },
-            { gameID: "project_zomboid", title: "Project Zomboid", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/108600/header.jpg", stores: [{ storeID: "0", normalPrice: 59.99, salePrice: 40.19, savings: 33.0, dealID: "pz_steam", directUrl: "https://store.steampowered.com/app/108600/Project_Zomboid/" }] },
-            { gameID: "valheim", title: "Valheim", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/892970/header.jpg", stores: [{ storeID: "0", normalPrice: 37.99, salePrice: 18.99, savings: 50.0, dealID: "valheim_steam", directUrl: "https://store.steampowered.com/app/892970/Valheim/" }] },
-            { gameID: "deep_rock", title: "Deep Rock Galactic", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/548430/header.jpg", stores: [{ storeID: "0", normalPrice: 57.99, salePrice: 19.13, savings: 67.0, dealID: "drg_steam", directUrl: "https://store.steampowered.com/app/548430/Deep_Rock_Galactic/" }] },
-            { gameID: "civilization6", title: "Sid Meier’s Civilization VI", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/289070/header.jpg", stores: [{ storeID: "0", normalPrice: 129.00, salePrice: 12.90, savings: 90.0, dealID: "civ6_steam", directUrl: "https://store.steampowered.com/app/289070/Sid_Meiers_Civilization_VI/" }] },
-            { gameID: "cities_skylines", title: "Cities: Skylines", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/255710/header.jpg", stores: [{ storeID: "0", normalPrice: 88.99, salePrice: 26.69, savings: 70.0, dealID: "cs1_steam", directUrl: "https://store.steampowered.com/app/255710/Cities_Skylines/" }] },
-            { gameID: "manor_lords", title: "Manor Lords", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1363080/header.jpg", stores: [{ storeID: "0", normalPrice: 99.99, salePrice: 69.99, savings: 30.0, dealID: "ml_steam", directUrl: "https://store.steampowered.com/app/1363080/Manor_Lords/" }] },
-            { gameID: "frostpunk", title: "Frostpunk", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/323190/header.jpg", stores: [{ storeID: "0", normalPrice: 88.99, salePrice: 13.34, savings: 85.0, dealID: "frostpunk_steam", directUrl: "https://store.steampowered.com/app/323190/Frostpunk/" }] },
-            { gameID: "factorio", title: "Factorio", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/header.jpg", stores: [{ storeID: "0", normalPrice: 130.00, salePrice: 130.00, savings: 0, dealID: "factorio_steam", directUrl: "https://store.steampowered.com/app/427520/Factorio/" }] },
-            { gameID: "rimworld", title: "RimWorld", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/294100/header.jpg", stores: [{ storeID: "0", normalPrice: 84.99, salePrice: 84.99, savings: 0, dealID: "rimworld_steam", directUrl: "https://store.steampowered.com/app/294100/RimWorld/" }] },
-            { gameID: "satisfactory", title: "Satisfactory", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/526870/header.jpg", stores: [{ storeID: "0", normalPrice: 99.99, salePrice: 66.99, savings: 33.0, dealID: "satisfactory_steam", directUrl: "https://store.steampowered.com/app/526870/Satisfactory/" }] }
+            { gameID: "g23", title: "Terraria", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/105600/header.jpg", stores: [{ storeID: "0", normalPrice: 32.99, salePrice: 16.49, savings: 50.0, dealID: "terraria_steam", directUrl: "https://store.steampowered.com/app/105600/Terraria/" }] }
         ];
 
         function getFavorites() {
@@ -535,6 +415,7 @@
 
         function showOnlyFavorites() {
             showingFavoritesOnly = true;
+            onlyHotDealsActive = false;
             const favs = getFavorites();
             const container = document.getElementById('deals');
             container.innerHTML = '';
@@ -563,6 +444,8 @@
         }
 
         function clearFilters() {
+            showingFavoritesOnly = false;
+            onlyHotDealsActive = false;
             document.getElementById('searchTitle').value = '';
             document.getElementById('minPrice').value = 0;
             document.getElementById('maxPrice').value = 1000;
@@ -578,6 +461,7 @@
 
         function filterHotDeals() {
             showingFavoritesOnly = false;
+            onlyHotDealsActive = true;
             document.getElementById('searchTitle').value = '';
             document.getElementById('minPrice').value = 0;
             document.getElementById('maxPrice').value = 1000;
@@ -597,7 +481,7 @@
         function fetchDeals() {
             showingFavoritesOnly = false;
             const container = document.getElementById('deals');
-            container.innerHTML = '<div class="loading">Carregando catálogo completo...</div>';
+            container.innerHTML = '<div class="loading">Carregando catálogo e calculando descontos reais...</div>';
 
             const titleInput = document.getElementById('searchTitle').value.trim().toLowerCase();
             const selectedStore = document.getElementById('storeSelect').value;
@@ -620,6 +504,15 @@
                 }, availableStores[0]);
 
                 const saleBRL = parseFloat(bestStoreOffer.salePrice);
+                const normPrice = parseFloat(bestStoreOffer.normalPrice);
+
+                // VERIFICAÇÃO RIGOROSA SE EXISTE DESCONTO REAL
+                const isPromoActive = saleBRL < normPrice && parseFloat(bestStoreOffer.savings) > 0;
+
+                // SE O FILTRO "SÓ PROMOÇÕES" ESTIVER ATIVO, IGNORA JOGOS COM PREÇO CHEIO
+                if (onlyHotDealsActive && !isPromoActive) {
+                    return;
+                }
 
                 const matchesTitle = titleInput === "" || game.title.toLowerCase().includes(titleInput);
                 const matchesPrice = saleBRL >= minPriceBRL && saleBRL <= maxPriceBRL;
@@ -630,9 +523,6 @@
                         .map(s => storeNames[s.storeID] || "Outra")
                         .join(", ");
 
-                    // AJUSTE AUTOMÁTICO DE PROMOÇÃO EXPIRADA
-                    const normPrice = parseFloat(bestStoreOffer.normalPrice);
-                    const isPromoActive = saleBRL < normPrice && parseFloat(bestStoreOffer.savings) > 0;
                     const calculatedSavings = isPromoActive ? Math.round(((normPrice - saleBRL) / normPrice) * 100) : 0;
 
                     processedDeals.push({
@@ -668,8 +558,8 @@
             if (processedDeals.length === 0) {
                 container.innerHTML = `
                     <div class="loading" style="line-height: 1.6;">
-                        🔍 Nenhuma promoção encontrada para essa busca.<br>
-                        <span style="font-size: 14px; color: #888;">Tente pesquisar outro termo ou alterar o filtro.</span>
+                        🔍 Nenhuma oferta ativa encontrada para esses filtros.<br>
+                        <span style="font-size: 14px; color: #888;">Tente mudar a loja ou clicar em "Limpar" para ver todo o catálogo.</span>
                     </div>`;
                 return;
             }
