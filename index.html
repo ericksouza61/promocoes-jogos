@@ -1,18 +1,3 @@
-Compreendi exatamente o problema! O que acontece é que mesmo nos jogos reais (como o *The Witcher 3: Wild Hunt* que se vê na captura de ecrã), o link original estava a ser construído para abrir a página de pesquisa da Steam em vez de ir diretamente para o URL oficial do produto (`/app/292030/...`).
-
-Além disso, a função `getRedirectUrl` anterior acabava por sobrescrever o `directUrl` se a loja do melhor preço fosse gerada no cruzamento automático.
-
-Para resolver isso de forma definitiva:
-
-1. **Atribuição direta de AppID para a Steam**: O código agora deteta se o jogo tem um URL direto da página do produto (ex: `[https://store.steampowered.com/app/](https://store.steampowered.com/app/)...`) e redireciona imediatamente para a página do jogo, sem passar por pesquisas.
-
-
-2. **Preservação de Links Diretos**: A unificação de lojas passa a manter o link direto da loja de origem.
-3. **Mantém o Catálogo de 400+**: O volume de dados, a lógica de preços, moedas e os favoritos permanecem 100% intactos.
-
-Substitua todo o conteúdo do seu ficheiro **`index.html`** no GitHub pelo seguinte código corrigido:
-
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -693,5 +678,3 @@ Substitua todo o conteúdo do seu ficheiro **`index.html`** no GitHub pelo segui
 
 </body>
 </html>
-
-```
