@@ -324,7 +324,6 @@
             "3": title => `https://www.greenmangaming.com/search/${encodeURIComponent(title)}`
         };
 
-        // CATÁLOGO COMPLETO COM MAIS DE 400 JOGOS
         const gamesDatabase = [
             { gameID: "g1", title: "Grand Theft Auto V", thumb: "https://cdn1.epicgames.com/offer/657158713d2a456c8a743329fa900f08/EGS_GrandTheftAutoV_RockstarGames_S1_2560x1440-animation-01_2560x1440-394cb9cc0607dca08f0a1c62f267ec4c", stores: [{ storeID: "0", normalPrice: 83.90, salePrice: 41.95, savings: 50.0, dealID: "gta5_s", directUrl: "https://store.steampowered.com/app/271590/Grand_Theft_Auto_V/" }] },
             { gameID: "g2", title: "Cyberpunk 2077", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg", stores: [{ storeID: "0", normalPrice: 199.99, salePrice: 79.99, savings: 60.0, dealID: "cp2077_s", directUrl: "https://store.steampowered.com/app/1091500/Cyberpunk_2077/" }] },
@@ -497,27 +496,34 @@
             fetchDeals();
         }
 
-        // CORREÇÃO APLICADA: Redirecionamento inteligente e direto para evitar telas genéricas de pesquisa
-        function getRedirectUrl(bestOffer, title) {
+        // CORREÇÃO INTELIGENTE: Se o jogo for gerado (gen_), busca apenas pelo nome principal da franquia para evitar 0 resultados
+        function getRedirectUrl(bestOffer, title, gameID) {
             if (bestOffer.directUrl) {
                 return bestOffer.directUrl;
             }
-            const storeId = bestOffer.storeID;
-            const formattedTitle = encodeURIComponent(title);
 
-            if (storeId === "0") {
-                return `https://store.steampowered.com/search/?term=${formattedTitle}`;
-            } else if (storeId === "25") {
-                return `https://store.epicgames.com/pt-BR/browse?q=${formattedTitle}`;
-            } else if (storeId === "15") {
-                return `https://www.fanatical.com/en/search?search=${formattedTitle}`;
-            } else if (storeId === "7") {
-                return `https://www.gog.com/en/games?query=${formattedTitle}`;
-            } else if (storeId === "11") {
-                return `https://www.humblebundle.com/store/search?sort=bestselling&search=${formattedTitle}`;
+            let searchTerm = title;
+            if (gameID && gameID.startsWith('gen_')) {
+                // Pega apenas o nome principal da franquia (ex: "Tekken" em vez de "Tekken - Edição Completa Vol. 4")
+                searchTerm = title.split(' - ')[0].split(' Vol.')[0];
             }
 
-            return `https://store.steampowered.com/search/?term=${formattedTitle}`;
+            const storeId = bestOffer.storeID;
+            const formattedQuery = encodeURIComponent(searchTerm);
+
+            if (storeId === "0") {
+                return `https://store.steampowered.com/search/?term=${formattedQuery}`;
+            } else if (storeId === "25") {
+                return `https://store.epicgames.com/pt-BR/browse?q=${formattedQuery}`;
+            } else if (storeId === "15") {
+                return `https://www.fanatical.com/en/search?search=${formattedQuery}`;
+            } else if (storeId === "7") {
+                return `https://www.gog.com/en/games?query=${formattedQuery}`;
+            } else if (storeId === "11") {
+                return `https://www.humblebundle.com/store/search?sort=bestselling&search=${formattedQuery}`;
+            }
+
+            return `https://store.steampowered.com/search/?term=${formattedQuery}`;
         }
 
         function fetchDeals() {
@@ -547,7 +553,8 @@
                         salePrice: baseOffer.salePrice,
                         savings: baseOffer.savings,
                         dealID: `${game.gameID}_${sId}`,
-                        directUrl: null
+                        directUrl: null,
+                        gameIDRef: game.gameID
                     };
                 });
 
@@ -584,10 +591,11 @@
 
                     processedDeals.push({
                         dealID: bestStoreOffer.dealID,
+                        gameID: game.gameID,
                         title: game.title,
                         thumb: game.thumb,
-                        normalPrice: bestStoreOffer.normalPrice,
-                        salePrice: bestStoreOffer.salePrice,
+                        normalPrice: baseOffer.normalPrice,
+                        salePrice: baseOffer.salePrice,
                         savings: calculatedSavings,
                         hasDiscount: isPromoActive,
                         storeID: bestStoreOffer.storeID,
@@ -634,7 +642,7 @@
                 const salePriceBRL = parseFloat(deal.salePrice).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                 const storeName = storeNames[deal.storeID] || 'Loja Parceira';
                 const isFav = favs.some(f => f.dealID === deal.dealID);
-                const targetUrl = getRedirectUrl(deal, deal.title);
+                const targetUrl = getRedirectUrl(deal, deal.title, deal.gameID);
 
                 const card = document.createElement('div');
                 card.className = 'card';
