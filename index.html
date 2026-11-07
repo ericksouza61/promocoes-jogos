@@ -314,10 +314,24 @@
             "25": "Epic Games"
         };
 
+        // MAPA DIRETO DE URLS DA STEAM PARA AS FRANQUIAS (Evita cair em pesquisa)
+        const steamFranchiseDirectUrls = {
+            "Dragon Ball": "https://store.steampowered.com/app/678950/DRAGON_BALL_FighterZ/",
+            "Resident Evil": "https://store.steampowered.com/app/883710/Resident_Evil_2/",
+            "Street Fighter": "https://store.steampowered.com/app/1364780/Street_Fighter_6/",
+            "Tekken": "https://store.steampowered.com/app/1778820/TEKKEN_8/",
+            "Dark Souls": "https://store.steampowered.com/app/374320/DARK_SOULS_III/",
+            "Fallout": "https://store.steampowered.com/app/377160/Fallout_4/",
+            "Far Cry": "https://store.steampowered.com/app/552520/Far_Cry_5/",
+            "Battlefield": "https://store.steampowered.com/app/1238840/Battlefield_1/",
+            "The Elder Scrolls": "https://store.steampowered.com/app/489830/The_Elder_Scrolls_V_Skyrim_Special_Edition/",
+            "Grand Theft Auto": "https://store.steampowered.com/app/271590/Grand_Theft_Auto_V/"
+        };
+
         const gamesDatabase = [
             { gameID: "g1", title: "Grand Theft Auto V", thumb: "https://cdn1.epicgames.com/offer/657158713d2a456c8a743329fa900f08/EGS_GrandTheftAutoV_RockstarGames_S1_2560x1440-animation-01_2560x1440-394cb9cc0607dca08f0a1c62f267ec4c", stores: [
                 { storeID: "25", normalPrice: 83.90, salePrice: 41.95, savings: 50.0, dealID: "gta5_e", directUrl: "https://store.epicgames.com/pt-BR/p/grand-theft-auto-v" },
-                { storeID: "0", normalPrice: 83.90, salePrice: 83.90, savings: 0, dealID: "gta5_s", directUrl: "https://store.steampowered.com/app/271590/Grand_Theft_Auto_V/" }
+                { storeID: "0", normalPrice: 83.90, salePrice: 41.95, savings: 50.0, dealID: "gta5_s", directUrl: "https://store.steampowered.com/app/271590/Grand_Theft_Auto_V/" }
             ] },
             { gameID: "g2", title: "Cyberpunk 2077", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg", stores: [
                 { storeID: "0", normalPrice: 199.99, salePrice: 79.99, savings: 60.0, dealID: "cp2077_s", directUrl: "https://store.steampowered.com/app/1091500/Cyberpunk_2077/" },
@@ -325,8 +339,8 @@
             ] },
             { gameID: "g3", title: "The Witcher 3: Wild Hunt", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg", stores: [
                 { storeID: "25", normalPrice: 150.00, salePrice: 30.00, savings: 80.0, dealID: "w3_e", directUrl: "https://store.epicgames.com/pt-BR/p/the-witcher-3-wild-hunt" },
-                { storeID: "0", normalPrice: 150.00, salePrice: 150.00, savings: 0, dealID: "w3_s", directUrl: "https://store.steampowered.com/app/292030/The_Witcher_3_Wild_Hunt/" },
-                { storeID: "7", normalPrice: 150.00, salePrice: 75.00, savings: 50.0, dealID: "w3_g", directUrl: "https://www.gog.com/en/game/the_witcher_3_wild_hunt" }
+                { storeID: "0", normalPrice: 150.00, salePrice: 30.00, savings: 80.0, dealID: "w3_s", directUrl: "https://store.steampowered.com/app/292030/The_Witcher_3_Wild_Hunt/" },
+                { storeID: "7", normalPrice: 150.00, salePrice: 30.00, savings: 80.0, dealID: "w3_g", directUrl: "https://www.gog.com/en/game/the_witcher_3_wild_hunt" }
             ] },
             { gameID: "g4", title: "Red Dead Redemption 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/header.jpg", stores: [{ storeID: "0", normalPrice: 299.99, salePrice: 98.99, savings: 67.0, dealID: "rdr2_s", directUrl: "https://store.steampowered.com/app/1174180/Red_Dead_Redemption_2/" }] },
             { gameID: "g5", title: "Elden Ring", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/header.jpg", stores: [{ storeID: "0", normalPrice: 229.90, salePrice: 160.93, savings: 30.0, dealID: "elden_s", directUrl: "https://store.steampowered.com/app/1245620/ELDEN_RING/" }] },
@@ -334,17 +348,17 @@
             { gameID: "g7", title: "Resident Evil 4 Remake", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2050650/header.jpg", stores: [{ storeID: "0", normalPrice: 249.00, salePrice: 124.50, savings: 50.0, dealID: "re4r_s", directUrl: "https://store.steampowered.com/app/2050650/Resident_Evil_4/" }] },
             { gameID: "g8", title: "Mortal Kombat 11", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/976310/header.jpg", stores: [{ storeID: "0", normalPrice: 229.99, salePrice: 57.49, savings: 75.0, dealID: "mk11_s", directUrl: "https://store.steampowered.com/app/976310/Mortal_Kombat_11/" }] },
             { gameID: "g9", title: "Mortal Kombat 1", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1794960/header.jpg", stores: [{ storeID: "25", normalPrice: 299.90, salePrice: 119.96, savings: 60.0, dealID: "mk1_e", directUrl: "https://store.epicgames.com/pt-BR/p/mortal-kombat-1" }] },
-            { gameID: "g10", title: "Hogwarts Legacy", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/990080/header.jpg", stores: [{ storeID: "0", normalPrice: 249.99, salePrice: 99.99, savings: 60.0, dealID: "hl_s", directUrl: "https://store.steampowered.com/app/990080/Hogwarts_Legacy/" }] },
-            { gameID: "g11", title: "Batman: Arkham Knight", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/208650/header.jpg", stores: [{ storeID: "0", normalPrice: 89.99, salePrice: 17.99, savings: 80.0, dealID: "bak_s", directUrl: "https://store.steampowered.com/app/208650/Batman_Arkham_Knight/" }] },
-            { gameID: "g12", title: "Baldur's Gate 3", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/header.jpg", stores: [{ storeID: "7", normalPrice: 199.99, salePrice: 179.99, savings: 10.0, dealID: "bg3_g", directUrl: "https://store.steampowered.com/app/1086940/Baldurs_Gate_3/" }] },
-            { gameID: "g13", title: "Marvel's Spider-Man Remastered", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1817070/header.jpg", stores: [{ storeID: "0", normalPrice: 249.90, salePrice: 149.94, savings: 40.0, dealID: "spide_s", directUrl: "https://store.steampowered.com/app/1817070/Marvels_SpiderMan_Remastered/" }] },
-            { gameID: "g14", title: "Horizon Zero Dawn", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1151640/header.jpg", stores: [{ storeID: "0", normalPrice: 199.50, salePrice: 49.87, savings: 75.0, dealID: "hzd_s", directUrl: "https://store.steampowered.com/app/1151640/Horizon_Zero_Dawn_Complete_Edition/" }] },
-            { gameID: "g15", title: "Assassin's Creed Valhalla", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2208920/header.jpg", stores: [{ storeID: "25", normalPrice: 199.99, salePrice: 49.99, savings: 75.0, dealID: "acv_e", directUrl: "https://store.epicgames.com/pt-BR/p/assassins-creed-valhalla" }] },
-            { gameID: "g16", title: "Far Cry 6", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2369390/header.jpg", stores: [{ storeID: "25", normalPrice: 249.99, salePrice: 62.49, savings: 75.0, dealID: "fc6_e", directUrl: "https://store.epicgames.com/pt-BR/p/far-cry-6" }] },
-            { gameID: "g17", title: "Left 4 Dead 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/550/header.jpg", stores: [{ storeID: "0", normalPrice: 32.99, salePrice: 6.59, savings: 80.0, dealID: "l4d2_s", directUrl: "https://store.steampowered.com/app/550/Left_4_Dead_2/" }] },
-            { gameID: "g18", title: "Portal 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/620/header.jpg", stores: [{ storeID: "0", normalPrice: 32.99, salePrice: 6.59, savings: 80.0, dealID: "portal2_s", directUrl: "https://store.steampowered.com/app/620/Portal_2/" }] },
-            { gameID: "g19", title: "EA SPORTS FC 24", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2195250/header.jpg", stores: [{ storeID: "0", normalPrice: 359.00, salePrice: 53.85, savings: 85.0, dealID: "fc24_s", directUrl: "https://store.steampowered.com/app/2195250/EA_SPORTS_FC_24/" }] },
-            { gameID: "g20", title: "Forza Horizon 5", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1551360/header.jpg", stores: [{ storeID: "0", normalPrice: 249.00, salePrice: 124.50, savings: 50.0, dealID: "fh5_s", directUrl: "https://store.steampowered.com/app/1551360/Forza_Horizon_5/" }] }
+            { gameID: "g10", title: "Dragon Ball FighterZ", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/678950/header.jpg", stores: [{ storeID: "0", normalPrice: 229.90, salePrice: 34.48, savings: 85.0, dealID: "dbfz_s", directUrl: "https://store.steampowered.com/app/678950/DRAGON_BALL_FighterZ/" }] },
+            { gameID: "g11", title: "Hogwarts Legacy", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/990080/header.jpg", stores: [{ storeID: "0", normalPrice: 249.99, salePrice: 99.99, savings: 60.0, dealID: "hl_s", directUrl: "https://store.steampowered.com/app/990080/Hogwarts_Legacy/" }] },
+            { gameID: "g12", title: "Batman: Arkham Knight", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/208650/header.jpg", stores: [{ storeID: "0", normalPrice: 89.99, salePrice: 17.99, savings: 80.0, dealID: "bak_s", directUrl: "https://store.steampowered.com/app/208650/Batman_Arkham_Knight/" }] },
+            { gameID: "g13", title: "Baldur's Gate 3", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/header.jpg", stores: [{ storeID: "0", normalPrice: 199.99, salePrice: 179.99, savings: 10.0, dealID: "bg3_s", directUrl: "https://store.steampowered.com/app/1086940/Baldurs_Gate_3/" }] },
+            { gameID: "g14", title: "Marvel's Spider-Man Remastered", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1817070/header.jpg", stores: [{ storeID: "0", normalPrice: 249.90, salePrice: 149.94, savings: 40.0, dealID: "spide_s", directUrl: "https://store.steampowered.com/app/1817070/Marvels_SpiderMan_Remastered/" }] },
+            { gameID: "g15", title: "Horizon Zero Dawn", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1151640/header.jpg", stores: [{ storeID: "0", normalPrice: 199.50, salePrice: 49.87, savings: 75.0, dealID: "hzd_s", directUrl: "https://store.steampowered.com/app/1151640/Horizon_Zero_Dawn_Complete_Edition/" }] },
+            { gameID: "g16", title: "Assassin's Creed Valhalla", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2208920/header.jpg", stores: [{ storeID: "25", normalPrice: 199.99, salePrice: 49.99, savings: 75.0, dealID: "acv_e", directUrl: "https://store.epicgames.com/pt-BR/p/assassins-creed-valhalla" }] },
+            { gameID: "g17", title: "Far Cry 6", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2369390/header.jpg", stores: [{ storeID: "25", normalPrice: 249.99, salePrice: 62.49, savings: 75.0, dealID: "fc6_e", directUrl: "https://store.epicgames.com/pt-BR/p/far-cry-6" }] },
+            { gameID: "g18", title: "Left 4 Dead 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/550/header.jpg", stores: [{ storeID: "0", normalPrice: 32.99, salePrice: 6.59, savings: 80.0, dealID: "l4d2_s", directUrl: "https://store.steampowered.com/app/550/Left_4_Dead_2/" }] },
+            { gameID: "g19", title: "Portal 2", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/620/header.jpg", stores: [{ storeID: "0", normalPrice: 32.99, salePrice: 6.59, savings: 80.0, dealID: "portal2_s", directUrl: "https://store.steampowered.com/app/620/Portal_2/" }] },
+            { gameID: "g20", title: "EA SPORTS FC 24", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/2195250/header.jpg", stores: [{ storeID: "0", normalPrice: 359.00, salePrice: 53.85, savings: 85.0, dealID: "fc24_s", directUrl: "https://store.steampowered.com/app/2195250/EA_SPORTS_FC_24/" }] }
         ];
 
         const franchises = [
@@ -384,6 +398,8 @@
                 const sale = parseFloat((f.basePrice * (0.2 + (Math.random() * 0.6))).toFixed(2));
                 const savingsVal = Math.round(((f.basePrice - sale) / f.basePrice) * 100);
                 const assignedStore = i % 2 === 0 ? "15" : (i % 3 === 0 ? "25" : "0");
+                const defaultDirectUrl = (assignedStore === "0" && steamFranchiseDirectUrls[f.name]) ? steamFranchiseDirectUrls[f.name] : null;
+
                 gamesDatabase.push({
                     gameID: `gen_${idCounter}`,
                     title: `${f.name} - Edição Completa Vol. ${i}`,
@@ -394,7 +410,7 @@
                         salePrice: sale,
                         savings: savingsVal,
                         dealID: `deal_gen_${idCounter}`,
-                        directUrl: null
+                        directUrl: defaultDirectUrl
                     }]
                 });
                 idCounter++;
@@ -497,22 +513,20 @@
             fetchDeals();
         }
 
-        // REDIRECIONAMENTO INTELIGENTE GARANTIDO POR LOJA
+        // REDIRECIONAMENTO COM SUPORTE A LINKS DIRETOS DA STEAM/EPIC
         function getRedirectUrl(bestOffer, title, gameID) {
-            // Se a oferta vencedora tiver um link direto específico cadastrado, usa ele obrigatoriamente
             if (bestOffer.directUrl) {
                 return bestOffer.directUrl;
             }
 
-            let searchTerm = title;
-            if (gameID && gameID.startsWith('gen_')) {
-                searchTerm = title.split(' - ')[0].split(' Vol.')[0];
+            let mainFranchise = title.split(' - ')[0].split(' Vol.')[0];
+            if (bestOffer.storeID === "0" && steamFranchiseDirectUrls[mainFranchise]) {
+                return steamFranchiseDirectUrls[mainFranchise];
             }
 
             const storeId = String(bestOffer.storeID);
-            const formattedQuery = encodeURIComponent(searchTerm);
+            const formattedQuery = encodeURIComponent(mainFranchise);
 
-            // Redireciona corretamente para a página de busca exata da loja vencedora do menor preço
             if (storeId === "25") {
                 return `https://store.epicgames.com/pt-BR/browse?q=${formattedQuery}`;
             } else if (storeId === "0") {
@@ -559,7 +573,7 @@
                         salePrice: baseOffer.salePrice,
                         savings: baseOffer.savings,
                         dealID: `${game.gameID}_${sId}`,
-                        directUrl: null
+                        directUrl: baseOffer.directUrl || null
                     };
                 });
 
