@@ -321,7 +321,7 @@
             ] },
             { gameID: "g2", title: "Cyberpunk 2077", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg", stores: [
                 { storeID: "0", normalPrice: 199.99, salePrice: 79.99, savings: 60.0, dealID: "cp2077_s", directUrl: "https://store.steampowered.com/app/1091500/Cyberpunk_2077/" },
-                { storeID: "25", normalPrice: 199.99, salePrice: 199.99, savings: 0, dealID: "cp2077_e", directUrl: "https://store.epicgames.com/pt-BR/p/cyberpunk-2077" }
+                { storeID: "7", normalPrice: 199.99, salePrice: 79.99, savings: 60.0, dealID: "cp2077_g", directUrl: "https://www.gog.com/en/game/cyberpunk_2077" }
             ] },
             { gameID: "g3", title: "The Witcher 3: Wild Hunt", thumb: "https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg", stores: [
                 { storeID: "25", normalPrice: 150.00, salePrice: 30.00, savings: 80.0, dealID: "w3_e", directUrl: "https://store.epicgames.com/pt-BR/p/the-witcher-3-wild-hunt" },
@@ -497,8 +497,9 @@
             fetchDeals();
         }
 
-        // REDIRECIONAMENTO CORRIGIDO: Usa estritamente o link específico da oferta que venceu o "Menor Preço"
+        // REDIRECIONAMENTO INTELIGENTE GARANTIDO POR LOJA
         function getRedirectUrl(bestOffer, title, gameID) {
+            // Se a oferta vencedora tiver um link direto específico cadastrado, usa ele obrigatoriamente
             if (bestOffer.directUrl) {
                 return bestOffer.directUrl;
             }
@@ -511,6 +512,7 @@
             const storeId = String(bestOffer.storeID);
             const formattedQuery = encodeURIComponent(searchTerm);
 
+            // Redireciona corretamente para a página de busca exata da loja vencedora do menor preço
             if (storeId === "25") {
                 return `https://store.epicgames.com/pt-BR/browse?q=${formattedQuery}`;
             } else if (storeId === "0") {
